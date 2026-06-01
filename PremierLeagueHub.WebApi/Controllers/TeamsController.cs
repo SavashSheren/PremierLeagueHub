@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using PremierLeagueHub.BusinessLayer.Abstract;
 using PremierLeagueHub.DtoLayer.TeamDtos;
 
@@ -9,10 +10,17 @@ namespace PremierLeagueHub.WebApi.Controllers;
 public class TeamsController : ControllerBase
 {
     private readonly ITeamService _teamService;
+    private readonly IValidator<CreateTeamDto> _createTeamValidator;
+    private readonly IValidator<UpdateTeamDto> _updateTeamValidator;
 
-    public TeamsController(ITeamService teamService)
+    public TeamsController(
+        ITeamService teamService,
+        IValidator<CreateTeamDto> createTeamValidator,
+        IValidator<UpdateTeamDto> updateTeamValidator)
     {
         _teamService = teamService;
+        _createTeamValidator = createTeamValidator;
+        _updateTeamValidator = updateTeamValidator;
     }
 
     [HttpGet]
@@ -38,6 +46,19 @@ public class TeamsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateTeam(CreateTeamDto createTeamDto)
     {
+        var validationResult = await _createTeamValidator.ValidateAsync(createTeamDto);
+
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(x => new
+            {
+                x.PropertyName,
+                x.ErrorMessage
+            });
+
+            return BadRequest(errors);
+        }
+
         await _teamService.CreateTeamAsync(createTeamDto);
         return Ok("Team created successfully.");
     }
@@ -45,6 +66,19 @@ public class TeamsController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateTeam(UpdateTeamDto updateTeamDto)
     {
+        var validationResult = await _updateTeamValidator.ValidateAsync(updateTeamDto);
+
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(x => new
+            {
+                x.PropertyName,
+                x.ErrorMessage
+            });
+
+            return BadRequest(errors);
+        }
+
         var result = await _teamService.UpdateTeamAsync(updateTeamDto);
 
         if (!result)

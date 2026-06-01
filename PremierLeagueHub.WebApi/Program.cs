@@ -5,6 +5,8 @@ using PremierLeagueHub.BusinessLayer.Mapping;
 using PremierLeagueHub.DataAccessLayer.Abstract;
 using PremierLeagueHub.DataAccessLayer.Concrete;
 using PremierLeagueHub.DataAccessLayer.EntityFramework;
+using FluentValidation;
+using PremierLeagueHub.BusinessLayer.ValidationRules.TeamValidators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +16,7 @@ builder.Services.AddDbContext<PremierLeagueHubContext>(options =>
 });
 
 builder.Services.AddAutoMapper(typeof(GeneralMapping).Assembly);
-
+builder.Services.AddValidatorsFromAssemblyContaining<CreateTeamDtoValidator>();
 builder.Services.AddScoped<ITeamDal, EfTeamDal>();
 builder.Services.AddScoped<ITeamService, TeamManager>();
 
