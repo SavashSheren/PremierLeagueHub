@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PremierLeagueHub.DataAccessLayer.Abstract;
-using PremierLeagueHub.DataAccessLayer.Concreate;
+using PremierLeagueHub.DataAccessLayer.Concrete;
 
 namespace PremierLeagueHub.DataAccessLayer.Repositories;
 

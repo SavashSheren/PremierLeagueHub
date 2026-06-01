@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PremierLeagueHub.EntityLayer.Entities;
 
-namespace PremierLeagueHub.DataAccessLayer.Concreate;
+namespace PremierLeagueHub.DataAccessLayer.Concrete;
 
 public class PremierLeagueHubContext : DbContext
 {

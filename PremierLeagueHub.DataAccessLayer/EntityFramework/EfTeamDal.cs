@@ -1,5 +1,5 @@
 ﻿using PremierLeagueHub.DataAccessLayer.Abstract;
-using PremierLeagueHub.DataAccessLayer.Concreate;
+using PremierLeagueHub.DataAccessLayer.Concrete;
 using PremierLeagueHub.DataAccessLayer.Repositories;
 using PremierLeagueHub.EntityLayer.Entities;
 

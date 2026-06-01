@@ -3,7 +3,7 @@ using PremierLeagueHub.BusinessLayer.Abstract;
 using PremierLeagueHub.BusinessLayer.Concrete;
 using PremierLeagueHub.BusinessLayer.Mapping;
 using PremierLeagueHub.DataAccessLayer.Abstract;
-using PremierLeagueHub.DataAccessLayer.Concreate;
+using PremierLeagueHub.DataAccessLayer.Concrete;
 
 using PremierLeagueHub.DataAccessLayer.EntityFramework;
 
