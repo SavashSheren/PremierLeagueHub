@@ -155,3 +155,64 @@
 .alert {
     border: 0;
 }
+.dashboard-stat-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 26px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.25s ease;
+}
+
+    .dashboard-stat-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .dashboard-stat-card span {
+        color: #64748b;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .dashboard-stat-card h2 {
+        font-size: 36px;
+        font-weight: 900;
+        margin: 8px 0 0;
+        color: #0f172a;
+    }
+
+.stat-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 22px;
+}
+
+.admin-table thead th {
+    color: #64748b;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table tbody td {
+    padding: 18px 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table-team-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 14px;
+    padding: 7px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+}
