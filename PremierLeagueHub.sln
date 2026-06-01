@@ -3,7 +3,49 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36429.23 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PremierLeagueHub.EntityLayer", "PremierLeagueHub.EntityLayer\PremierLeagueHub.EntityLayer.csproj", "{D515D2A3-6DDD-478C-9381-115E28479323}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PremierLeagueHub.DtoLayer", "PremierLeagueHub.DtoLayer\PremierLeagueHub.DtoLayer.csproj", "{94C1A9F6-71B9-42D0-873E-B9BA5C6D5FF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PremierLeagueHub.DataAccessLayer", "PremierLeagueHub.DataAccessLayer\PremierLeagueHub.DataAccessLayer.csproj", "{8B22B386-1FF4-458F-8BF4-D8F359E40FAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PremierLeagueHub.BusinessLayer", "PremierLeagueHub.BusinessLayer\PremierLeagueHub.BusinessLayer.csproj", "{E793C18F-8C06-4B95-B690-45ACF107ED00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PremierLeagueHub.WebApi", "PremierLeagueHub.WebApi\PremierLeagueHub.WebApi.csproj", "{CCA9826C-11CC-4C2A-8866-ED9ED28EC768}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PremierLeagueHub.WebUI", "PremierLeagueHub.WebUI\PremierLeagueHub.WebUI.csproj", "{79A23C38-E634-4968-97BA-08A6AC4BE9B2}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D515D2A3-6DDD-478C-9381-115E28479323}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D515D2A3-6DDD-478C-9381-115E28479323}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D515D2A3-6DDD-478C-9381-115E28479323}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D515D2A3-6DDD-478C-9381-115E28479323}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94C1A9F6-71B9-42D0-873E-B9BA5C6D5FF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94C1A9F6-71B9-42D0-873E-B9BA5C6D5FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94C1A9F6-71B9-42D0-873E-B9BA5C6D5FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94C1A9F6-71B9-42D0-873E-B9BA5C6D5FF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B22B386-1FF4-458F-8BF4-D8F359E40FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B22B386-1FF4-458F-8BF4-D8F359E40FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B22B386-1FF4-458F-8BF4-D8F359E40FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B22B386-1FF4-458F-8BF4-D8F359E40FAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E793C18F-8C06-4B95-B690-45ACF107ED00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E793C18F-8C06-4B95-B690-45ACF107ED00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E793C18F-8C06-4B95-B690-45ACF107ED00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E793C18F-8C06-4B95-B690-45ACF107ED00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCA9826C-11CC-4C2A-8866-ED9ED28EC768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCA9826C-11CC-4C2A-8866-ED9ED28EC768}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCA9826C-11CC-4C2A-8866-ED9ED28EC768}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCA9826C-11CC-4C2A-8866-ED9ED28EC768}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79A23C38-E634-4968-97BA-08A6AC4BE9B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79A23C38-E634-4968-97BA-08A6AC4BE9B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79A23C38-E634-4968-97BA-08A6AC4BE9B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79A23C38-E634-4968-97BA-08A6AC4BE9B2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
