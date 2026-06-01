@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,16 +16,31 @@
 <body>
 
     <header class="public-navbar">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container public-navbar-inner d-flex justify-content-between align-items-center">
             <a href="/" class="public-brand">
+                <div class="brand-ball">⚽</div>
                 Premier<span>League</span>Hub
             </a>
 
             <nav class="d-flex align-items-center">
-                <a href="/" class="public-nav-link">Home</a>
-                <a href="/#teams" class="public-nav-link">Teams</a>
-                <a href="/Admin/Dashboard/Index" class="btn btn-primary public-admin-btn ms-3">
-                    Admin Panel
+                <a href="/" class="public-nav-link @(currentController == "Home" && currentAction == "Index" ? "active" : "")">
+                    Home
+                </a>
+
+                <a href="/#teams" class="public-nav-link">
+                    Teams
+                </a>
+
+                <a href="#" class="public-nav-link">
+                    Fixtures
+                </a>
+
+                <a href="#" class="public-nav-link">
+                    Standings
+                </a>
+
+                <a href="/Admin/Dashboard/Index" class="public-admin-btn ms-3">
+                    Admin
                 </a>
             </nav>
         </div>
@@ -31,16 +51,35 @@
     </main>
 
     <footer class="public-footer">
-        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-                <strong>PremierLeagueHub</strong>
-                <div>Modern football management platform built with ASP.NET Core MVC and Web API.</div>
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <strong>Premier<span>League</span>Hub</strong>
+                    <p class="mt-2 mb-0">
+                        Modern football management platform built with ASP.NET Core MVC, Web API, DTOs, services and admin management.
+                    </p>
+                </div>
+
+                <div class="col-lg-3">
+                    <strong>Platform</strong>
+                    <div class="mt-2">
+                        <a href="/" class="d-block text-muted mb-1">Home</a>
+                        <a href="/#teams" class="d-block text-muted mb-1">Teams</a>
+                        <a href="/Admin/Dashboard/Index" class="d-block text-muted mb-1">Admin Panel</a>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 text-lg-end">
+                    <strong>Project Status</strong>
+                    <p class="mt-2 mb-0">
+                        Teams module, admin CRUD, public showcase and detail pages are active.
+                    </p>
+                </div>
             </div>
 
-            <div>
-                <a href="/Admin/Dashboard/Index" class="btn btn-outline-light rounded-pill px-4">
-                    Admin Panel
-                </a>
+            <div class="border-top mt-4 pt-3 d-flex justify-content-between flex-wrap gap-2" style="border-color: var(--pl-border) !important;">
+                <span class="text-muted">© 2026 PremierLeagueHub</span>
+                <span class="text-muted">Demo football data is used for portfolio purposes.</span>
             </div>
         </div>
     </footer>
