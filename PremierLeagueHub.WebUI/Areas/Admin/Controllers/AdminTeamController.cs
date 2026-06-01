@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PremierLeagueHub.DtoLayer.TeamDtos;
+using PremierLeagueHub.WebUI.Models;
 using System.Net.Http.Json;
 
 namespace PremierLeagueHub.WebUI.Areas.Admin.Controllers;
@@ -21,5 +22,43 @@ public class AdminTeamController : Controller
         var teams = await client.GetFromJsonAsync<List<ResultTeamDto>>("Teams");
 
         return View(teams ?? new List<ResultTeamDto>());
+    }
+
+    [HttpGet]
+    public IActionResult CreateTeam()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateTeam(CreateTeamDto createTeamDto)
+    {
+        var client = _httpClientFactory.CreateClient("PremierLeagueApi");
+
+        var response = await client.PostAsJsonAsync("Teams", createTeamDto);
+
+        if (response.IsSuccessStatusCode)
+        {
+            TempData["SuccessMessage"] = "Team created successfully.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            var validationErrors = await response.Content.ReadFromJsonAsync<List<ApiValidationError>>();
+
+            if (validationErrors != null)
+            {
+                foreach (var error in validationErrors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+            }
+
+            return View(createTeamDto);
+        }
+
+        ModelState.AddModelError(string.Empty, "An unexpected error occurred while creating the team.");
+        return View(createTeamDto);
     }
 }
