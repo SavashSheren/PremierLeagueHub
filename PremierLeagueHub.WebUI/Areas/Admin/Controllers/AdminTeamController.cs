@@ -61,4 +61,56 @@ public class AdminTeamController : Controller
         ModelState.AddModelError(string.Empty, "An unexpected error occurred while creating the team.");
         return View(createTeamDto);
     }
+    [HttpGet]
+    public async Task<IActionResult> EditTeam(int id)
+    {
+        var client = _httpClientFactory.CreateClient("PremierLeagueApi");
+
+        var team = await client.GetFromJsonAsync<UpdateTeamDto>($"Teams/{id}");
+
+        if (team == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        return View(team);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditTeam(UpdateTeamDto updateTeamDto)
+    {
+        var client = _httpClientFactory.CreateClient("PremierLeagueApi");
+
+        var response = await client.PutAsJsonAsync("Teams", updateTeamDto);
+
+        if (response.IsSuccessStatusCode)
+        {
+            TempData["SuccessMessage"] = "Team updated successfully.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            var validationErrors = await response.Content.ReadFromJsonAsync<List<ApiValidationError>>();
+
+            if (validationErrors != null)
+            {
+                foreach (var error in validationErrors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+            }
+
+            return View(updateTeamDto);
+        }
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            ModelState.AddModelError(string.Empty, "Team not found.");
+            return View(updateTeamDto);
+        }
+
+        ModelState.AddModelError(string.Empty, "An unexpected error occurred while updating the team.");
+        return View(updateTeamDto);
+    }
 }
