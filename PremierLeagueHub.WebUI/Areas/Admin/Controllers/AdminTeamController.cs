@@ -18,7 +18,6 @@ public class AdminTeamController : Controller
     public async Task<IActionResult> Index()
     {
         var client = _httpClientFactory.CreateClient("PremierLeagueApi");
-
         var teams = await client.GetFromJsonAsync<List<ResultTeamDto>>("Teams");
 
         return View(teams ?? new List<ResultTeamDto>());
@@ -34,7 +33,6 @@ public class AdminTeamController : Controller
     public async Task<IActionResult> CreateTeam(CreateTeamDto createTeamDto)
     {
         var client = _httpClientFactory.CreateClient("PremierLeagueApi");
-
         var response = await client.PostAsJsonAsync("Teams", createTeamDto);
 
         if (response.IsSuccessStatusCode)
@@ -45,22 +43,14 @@ public class AdminTeamController : Controller
 
         if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
         {
-            var validationErrors = await response.Content.ReadFromJsonAsync<List<ApiValidationError>>();
-
-            if (validationErrors != null)
-            {
-                foreach (var error in validationErrors)
-                {
-                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-                }
-            }
-
+            await AddApiErrorsToModelState(response);
             return View(createTeamDto);
         }
 
         ModelState.AddModelError(string.Empty, "An unexpected error occurred while creating the team.");
         return View(createTeamDto);
     }
+
     [HttpGet]
     public async Task<IActionResult> EditTeam(int id)
     {
@@ -80,7 +70,6 @@ public class AdminTeamController : Controller
     public async Task<IActionResult> EditTeam(UpdateTeamDto updateTeamDto)
     {
         var client = _httpClientFactory.CreateClient("PremierLeagueApi");
-
         var response = await client.PutAsJsonAsync("Teams", updateTeamDto);
 
         if (response.IsSuccessStatusCode)
@@ -91,16 +80,7 @@ public class AdminTeamController : Controller
 
         if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
         {
-            var validationErrors = await response.Content.ReadFromJsonAsync<List<ApiValidationError>>();
-
-            if (validationErrors != null)
-            {
-                foreach (var error in validationErrors)
-                {
-                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-                }
-            }
-
+            await AddApiErrorsToModelState(response);
             return View(updateTeamDto);
         }
 
@@ -112,5 +92,64 @@ public class AdminTeamController : Controller
 
         ModelState.AddModelError(string.Empty, "An unexpected error occurred while updating the team.");
         return View(updateTeamDto);
+    }
+
+    private async Task AddApiErrorsToModelState(HttpResponseMessage response)
+    {
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        if (string.IsNullOrWhiteSpace(responseContent))
+        {
+            ModelState.AddModelError(string.Empty, "Validation failed.");
+            return;
+        }
+
+        try
+        {
+            var validationErrors = System.Text.Json.JsonSerializer.Deserialize<List<ApiValidationError>>(
+                responseContent,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+            if (validationErrors != null)
+            {
+                foreach (var error in validationErrors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+
+                return;
+            }
+        }
+        catch
+        {
+            // API may return a different validation format.
+        }
+
+        ModelState.AddModelError(string.Empty, responseContent);
+    }
+    [HttpPost]
+    public async Task<IActionResult> DeleteTeam(int id)
+    {
+        var client = _httpClientFactory.CreateClient("PremierLeagueApi");
+
+        var response = await client.DeleteAsync($"Teams/{id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            TempData["SuccessMessage"] = "Team deleted successfully.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            TempData["ErrorMessage"] = "Team not found.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        TempData["ErrorMessage"] = "An unexpected error occurred while deleting the team.";
+        return RedirectToAction(nameof(Index));
     }
 }
