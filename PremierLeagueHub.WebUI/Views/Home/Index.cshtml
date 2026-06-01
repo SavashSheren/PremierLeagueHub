@@ -1,8 +1,271 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model List<ResultTeamDto>
+
+@{
+    ViewData["Title"] = "Premier League Hub";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    body {
+        background: #f4f7fb;
+        color: #0f172a;
+    }
+
+    .public-hero {
+        background: radial-gradient(circle at top left, #2563eb, #0f172a 55%);
+        border-radius: 34px;
+        padding: 70px 48px;
+        color: white;
+        margin-top: 28px;
+        margin-bottom: 42px;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .public-hero::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            right: -60px;
+            top: -60px;
+        }
+
+    .hero-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #dbeafe;
+    }
+
+    .public-hero h1 {
+        font-size: 56px;
+        line-height: 1.05;
+        font-weight: 900;
+        letter-spacing: -1.5px;
+        max-width: 780px;
+    }
+
+    .public-hero p {
+        font-size: 18px;
+        color: #dbeafe;
+        max-width: 680px;
+        margin-top: 18px;
+        margin-bottom: 32px;
+    }
+
+    .hero-actions a {
+        border-radius: 999px;
+        padding: 13px 24px;
+        font-weight: 800;
+        margin-right: 10px;
+    }
+
+    .section-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        margin-bottom: 24px;
+    }
+
+        .section-title h2 {
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: -0.8px;
+            margin: 0;
+        }
+
+        .section-title p {
+            margin: 6px 0 0;
+            color: #64748b;
+        }
+
+    .public-team-card {
+        background: white;
+        border-radius: 28px;
+        border: 0;
+        overflow: hidden;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+        transition: 0.25s ease;
+        height: 100%;
+    }
+
+        .public-team-card:hover {
+            transform: translateY(-6px);
+        }
+
+    .public-club-strip {
+        height: 9px;
+    }
+
+    .public-team-body {
+        padding: 28px;
+    }
+
+    .public-team-logo {
+        width: 82px;
+        height: 82px;
+        object-fit: contain;
+        border-radius: 22px;
+        padding: 12px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+    }
+
+    .club-name {
+        font-size: 22px;
+        font-weight: 900;
+        margin-bottom: 2px;
+    }
+
+    .club-short {
+        color: #64748b;
+        font-weight: 700;
+    }
+
+    .club-meta {
+        margin-top: 24px;
+    }
+
+    .club-meta-item {
+        margin-bottom: 16px;
+    }
+
+        .club-meta-item span {
+            display: block;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+
+        .club-meta-item strong {
+            font-size: 15px;
+        }
+
+    .color-dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: inline-block;
+        border: 1px solid #e5e7eb;
+        margin-right: 6px;
+    }
+
+    .empty-state {
+        background: white;
+        border-radius: 28px;
+        padding: 42px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+    }
+</style>
+
+<div class="container">
+    <section class="public-hero">
+        <span class="hero-badge">Premier League Management Platform</span>
+
+        <h1>Explore Premier League Clubs in One Modern Hub</h1>
+
+        <p>
+            Discover clubs, stadiums, managers and team identities through a clean ASP.NET Core MVC + Web API architecture.
+        </p>
+
+        <div class="hero-actions">
+            <a href="#teams" class="btn btn-light">Explore Teams</a>
+            <a href="/Admin/Dashboard/Index" class="btn btn-outline-light">Admin Panel</a>
+        </div>
+    </section>
+
+    <section id="teams" class="mb-5">
+        <div class="section-title">
+            <div>
+                <h2>Premier League Teams</h2>
+                <p>@Model.Count active club record(s) available.</p>
+            </div>
+        </div>
+
+        @if (ViewBag.ApiError != null)
+        {
+            <div class="alert alert-danger rounded-4">
+                @ViewBag.ApiError
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <h4>No teams found yet.</h4>
+                <p class="text-muted mb-0">Add teams from the admin panel to display them here.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var team in Model)
+                {
+                    <div class="col-xl-4 col-lg-6">
+                        <div class="public-team-card">
+                            <div class="public-club-strip" style="background:@team.PrimaryColor"></div>
+
+                            <div class="public-team-body">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="@team.LogoUrl" class="public-team-logo" alt="@team.TeamName logo" />
+
+                                    <div>
+                                        <div class="club-name">@team.TeamName</div>
+                                        <div class="club-short">@team.ShortName</div>
+                                    </div>
+                                </div>
+
+                                <div class="club-meta">
+                                    <div class="club-meta-item">
+                                        <span>City</span>
+                                        <strong>@team.City</strong>
+                                    </div>
+
+                                    <div class="club-meta-item">
+                                        <span>Stadium</span>
+                                        <strong>@team.StadiumName</strong>
+                                    </div>
+
+                                    <div class="club-meta-item">
+                                        <span>Manager</span>
+                                        <strong>@team.ManagerName</strong>
+                                    </div>
+
+                                    <div class="club-meta-item">
+                                        <span>Club Colors</span>
+                                        <span class="color-dot" style="background:@team.PrimaryColor"></span>
+                                        <span class="color-dot" style="background:@team.SecondaryColor"></span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-4">
+                                    @if (team.IsActive)
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary rounded-pill px-3 py-2">Passive</span>
+                                    }
+
+                                    <a href="/Admin/AdminTeam/EditTeam/@team.TeamId" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                        Manage
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
 </div>

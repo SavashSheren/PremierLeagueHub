@@ -1,32 +1,38 @@
 using Microsoft.AspNetCore.Mvc;
-using PremierLeagueHub.WebUI.Models;
-using System.Diagnostics;
+using PremierLeagueHub.DtoLayer.TeamDtos;
+using System.Net.Http.Json;
 
-namespace PremierLeagueHub.WebUI.Controllers
+namespace PremierLeagueHub.WebUI.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public HomeController(IHttpClientFactory httpClientFactory)
     {
-        private readonly ILogger<HomeController> _logger;
+        _httpClientFactory = httpClientFactory;
+    }
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+    public async Task<IActionResult> Index()
+    {
+        var client = _httpClientFactory.CreateClient("PremierLeagueApi");
 
-        public IActionResult Index()
+        try
         {
-            return View();
-        }
+            var teams = await client.GetFromJsonAsync<List<ResultTeamDto>>("Teams")
+                        ?? new List<ResultTeamDto>();
 
-        public IActionResult Privacy()
-        {
-            return View();
+            return View(teams);
         }
+        catch
+        {
+            ViewBag.ApiError = "The API service is currently unavailable.";
+            return View(new List<ResultTeamDto>());
+        }
+    }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    public IActionResult Privacy()
+    {
+        return View();
     }
 }
