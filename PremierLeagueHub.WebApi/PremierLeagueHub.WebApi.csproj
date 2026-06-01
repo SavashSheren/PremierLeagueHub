@@ -14,4 +14,11 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PremierLeagueHub.BusinessLayer\PremierLeagueHub.BusinessLayer.csproj" />
+    <ProjectReference Include="..\PremierLeagueHub.DataAccessLayer\PremierLeagueHub.DataAccessLayer.csproj" />
+    <ProjectReference Include="..\PremierLeagueHub.DtoLayer\PremierLeagueHub.DtoLayer.csproj" />
+    <ProjectReference Include="..\PremierLeagueHub.EntityLayer\PremierLeagueHub.EntityLayer.csproj" />
+  </ItemGroup>
+
 </Project>
