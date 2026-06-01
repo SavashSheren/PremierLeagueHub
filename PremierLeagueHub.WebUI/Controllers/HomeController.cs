@@ -35,4 +35,25 @@ public class HomeController : Controller
     {
         return View();
     }
+    public async Task<IActionResult> TeamDetail(int id)
+    {
+        var client = _httpClientFactory.CreateClient("PremierLeagueApi");
+
+        try
+        {
+            var team = await client.GetFromJsonAsync<GetTeamByIdDto>($"Teams/{id}");
+
+            if (team == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(team);
+        }
+        catch
+        {
+            TempData["ErrorMessage"] = "The team detail could not be loaded.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
 }
