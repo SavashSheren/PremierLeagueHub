@@ -14,23 +14,7 @@ public class HomeController : Controller
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<IActionResult> Index()
-    {
-        var client = _httpClientFactory.CreateClient("PremierLeagueApi");
-
-        try
-        {
-            var teams = await client.GetFromJsonAsync<List<ResultTeamDto>>("Teams")
-                        ?? new List<ResultTeamDto>();
-
-            return View(teams);
-        }
-        catch
-        {
-            ViewBag.ApiError = "The API service is currently unavailable.";
-            return View(new List<ResultTeamDto>());
-        }
-    }
+    
     public async Task<IActionResult> Index(string? searchTerm, string statusFilter = "all", string cityFilter = "all")
     {
         var client = _httpClientFactory.CreateClient("PremierLeagueApi");
