@@ -624,4 +624,347 @@ a {
         width: 86px;
         height: 86px;
     }
+    .standings-header {
+        background: linear-gradient(135deg, var(--pl-bg-2), var(--pl-card));
+        border-bottom: 1px solid var(--pl-border);
+        padding: 34px 0 26px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .standings-header::before {
+            content: "";
+            position: absolute;
+            top: -40%;
+            right: -5%;
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, rgba(0,230,118,.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+    .league-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: rgba(255,214,0,.09);
+        border: 1px solid rgba(255,214,0,.22);
+        border-radius: 20px;
+        padding: 5px 13px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 1px;
+        color: var(--pl-gold);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .standings-header h1 {
+        font-size: clamp(34px, 5vw, 54px);
+        font-weight: 900;
+        letter-spacing: -1px;
+        line-height: 1;
+        margin: 0;
+    }
+
+        .standings-header h1 span {
+            color: var(--pl-green);
+        }
+
+    .standings-header p {
+        color: var(--pl-muted);
+        margin-top: 8px;
+        margin-bottom: 0;
+    }
+
+    .standings-legend {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+        .standings-legend div {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 11px;
+            color: var(--pl-muted);
+            background: var(--pl-card);
+            border: 1px solid var(--pl-border);
+            padding: 6px 10px;
+            border-radius: var(--pl-radius-sm);
+        }
+
+    .legend-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+    }
+
+        .legend-dot.champion {
+            background: var(--pl-gold);
+        }
+
+        .legend-dot.ucl {
+            background: var(--pl-green);
+        }
+
+        .legend-dot.uel {
+            background: var(--pl-blue);
+        }
+
+        .legend-dot.relegation {
+            background: var(--pl-red);
+        }
+
+    .standings-content {
+        padding: 30px 0 56px;
+    }
+
+    .standing-stat-card {
+        background: var(--pl-card);
+        border: 1px solid var(--pl-border);
+        border-radius: var(--pl-radius-md);
+        padding: 20px;
+        box-shadow: 0 8px 28px rgba(0,0,0,.42);
+    }
+
+        .standing-stat-card span {
+            display: block;
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--pl-soft);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .standing-stat-card h3 {
+            font-size: 34px;
+            font-weight: 900;
+            color: var(--pl-green);
+            margin: 0;
+        }
+
+        .standing-stat-card p {
+            color: var(--pl-muted);
+            margin: 5px 0 0;
+            font-size: 13px;
+        }
+
+    .standings-table-wrap {
+        overflow-x: auto;
+        border-radius: var(--pl-radius-lg);
+        border: 1px solid var(--pl-border);
+        background: var(--pl-bg-2);
+        padding: 8px;
+    }
+
+    .standings-table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: separate;
+        border-spacing: 0 5px;
+    }
+
+        .standings-table thead th {
+            color: var(--pl-soft);
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+            .standings-table thead th.team-col {
+                text-align: left;
+            }
+
+        .standings-table tbody tr {
+            background: var(--pl-card);
+            transition: var(--pl-transition);
+        }
+
+            .standings-table tbody tr:hover {
+                background: var(--pl-card-2);
+                transform: translateX(3px);
+            }
+
+        .standings-table tbody td {
+            padding: 12px 10px;
+            text-align: center;
+            vertical-align: middle;
+            color: var(--pl-text);
+        }
+
+            .standings-table tbody td:first-child {
+                border-radius: var(--pl-radius-sm) 0 0 var(--pl-radius-sm);
+                padding: 0;
+            }
+
+            .standings-table tbody td:last-child {
+                border-radius: 0 var(--pl-radius-sm) var(--pl-radius-sm) 0;
+            }
+
+    .zone-strip {
+        width: 5px;
+        height: 46px;
+        border-radius: var(--pl-radius-sm) 0 0 var(--pl-radius-sm);
+    }
+
+        .zone-strip.champion {
+            background: var(--pl-gold);
+        }
+
+        .zone-strip.ucl {
+            background: var(--pl-green);
+        }
+
+        .zone-strip.uel {
+            background: var(--pl-blue);
+        }
+
+        .zone-strip.relegation {
+            background: var(--pl-red);
+        }
+
+        .zone-strip.none {
+            background: transparent;
+        }
+
+    .position-number {
+        font-weight: 900;
+        font-size: 17px;
+        color: var(--pl-muted);
+    }
+
+        .position-number.champion {
+            color: var(--pl-gold);
+        }
+
+        .position-number.ucl {
+            color: var(--pl-green);
+        }
+
+        .position-number.uel {
+            color: var(--pl-blue);
+        }
+
+        .position-number.relegation {
+            color: var(--pl-red);
+        }
+
+    .standing-team-cell {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        color: var(--pl-text);
+        text-align: left;
+    }
+
+        .standing-team-cell:hover {
+            color: var(--pl-green);
+        }
+
+        .standing-team-cell img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: var(--pl-elevated);
+            border: 1px solid var(--pl-border);
+            padding: 4px;
+        }
+
+        .standing-team-cell strong {
+            display: block;
+            font-size: 15px;
+            font-weight: 900;
+        }
+
+        .standing-team-cell span {
+            color: var(--pl-soft);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+    .win-cell {
+        color: var(--pl-green) !important;
+        font-weight: 900;
+    }
+
+    .draw-cell {
+        color: var(--pl-muted) !important;
+        font-weight: 900;
+    }
+
+    .loss-cell {
+        color: var(--pl-red) !important;
+        font-weight: 900;
+    }
+
+    .gd-positive {
+        color: var(--pl-green) !important;
+        font-weight: 900;
+    }
+
+    .gd-negative {
+        color: var(--pl-red) !important;
+        font-weight: 900;
+    }
+
+    .gd-zero {
+        color: var(--pl-soft) !important;
+        font-weight: 900;
+    }
+
+    .points-cell {
+        color: var(--pl-text) !important;
+        font-size: 18px;
+        font-weight: 900;
+    }
+
+    .form-pills {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .form-pill {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .form-win {
+        background: rgba(0,230,118,.18);
+        color: var(--pl-green);
+    }
+
+    .form-draw {
+        background: rgba(123,150,196,.13);
+        color: var(--pl-muted);
+    }
+
+    .form-loss {
+        background: rgba(255,23,68,.15);
+        color: var(--pl-red);
+    }
+
+    @media(max-width: 700px) {
+        .hide-sm {
+            display: none;
+        }
+
+        .standing-team-cell strong {
+            font-size: 13px;
+        }
+    }
 }

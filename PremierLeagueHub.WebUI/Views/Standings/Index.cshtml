@@ -1,0 +1,134 @@
+﻿@model StandingsViewModel
+
+@{
+    ViewData["Title"] = "Premier League Standings";
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+}
+
+<div class="standings-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="league-badge">Premier League</div>
+                <h1>League <span>Standings</span></h1>
+                <p>Demo standings table generated from seeded Premier League teams.</p>
+            </div>
+
+            <div class="col-lg-4 mt-3 mt-lg-0">
+                <div class="standings-legend">
+                    <div><span class="legend-dot champion"></span> Champion</div>
+                    <div><span class="legend-dot ucl"></span> Champions League</div>
+                    <div><span class="legend-dot uel"></span> Europa League</div>
+                    <div><span class="legend-dot relegation"></span> Relegation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container standings-content">
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="standing-stat-card">
+                <span>Leader</span>
+                <h3>@Model.Leader?.ShortName</h3>
+                <p>@Model.Leader?.TeamName · @Model.Leader?.Points pts</p>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="standing-stat-card">
+                <span>Best Attack</span>
+                <h3>@Model.BestAttack?.GoalsFor</h3>
+                <p>@Model.BestAttack?.TeamName</p>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="standing-stat-card">
+                <span>Best Defense</span>
+                <h3>@Model.BestDefense?.GoalsAgainst</h3>
+                <p>@Model.BestDefense?.TeamName conceded</p>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="standing-stat-card">
+                <span>Total Teams</span>
+                <h3>@Model.TotalTeams</h3>
+                <p>Premier League clubs</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="standings-table-wrap">
+        <table class="standings-table">
+            <thead>
+                <tr>
+                    <th style="width: 5px;"></th>
+                    <th>#</th>
+                    <th class="team-col">Team</th>
+                    <th>P</th>
+                    <th>W</th>
+                    <th>D</th>
+                    <th>L</th>
+                    <th class="hide-sm">GF</th>
+                    <th class="hide-sm">GA</th>
+                    <th>GD</th>
+                    <th>Form</th>
+                    <th>Pts</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td class="zone-cell">
+                            <div class="zone-strip @row.Zone"></div>
+                        </td>
+
+                        <td>
+                            <span class="position-number @row.Zone">@row.Position</span>
+                        </td>
+
+                        <td>
+                            <a href="/Home/TeamDetail/@row.TeamId" class="standing-team-cell">
+                                <img src="@row.LogoUrl" alt="@row.TeamName logo" />
+                                <div>
+                                    <strong>@row.TeamName</strong>
+                                    <span>@row.ShortName</span>
+                                </div>
+                            </a>
+                        </td>
+
+                        <td>@row.Played</td>
+                        <td class="win-cell">@row.Won</td>
+                        <td class="draw-cell">@row.Drawn</td>
+                        <td class="loss-cell">@row.Lost</td>
+                        <td class="hide-sm">@row.GoalsFor</td>
+                        <td class="hide-sm">@row.GoalsAgainst</td>
+
+                        <td class="@(row.GoalDifference > 0 ? "gd-positive" : row.GoalDifference < 0 ? "gd-negative" : "gd-zero")">
+                            @(row.GoalDifference > 0 ? "+" + row.GoalDifference : row.GoalDifference)
+                        </td>
+
+                        <td>
+                            <div class="form-pills">
+                                @foreach (var form in row.Form)
+                                {
+                                    <span class="form-pill @(form == "W" ? "form-win" : form == "D" ? "form-draw" : "form-loss")">
+                                        @form
+                                    </span>
+                                }
+                            </div>
+                        </td>
+
+                        <td class="points-cell">@row.Points</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
