@@ -1,0 +1,205 @@
+﻿@model AdminMatchEventViewModel
+
+@{
+    ViewData["Title"] = "Match Events";
+    ViewData["Description"] = "Manage goals, cards, substitutions and VAR timeline events.";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row g-4">
+    <div class="col-xl-7">
+        <div class="content-card">
+            <div class="admin-result-preview mb-4">
+                <div class="admin-result-team">
+                    <img src="@Model.HomeTeamLogoUrl" alt="@Model.HomeTeamName logo" />
+                    <h4>@Model.HomeTeamName</h4>
+                </div>
+
+                <div class="admin-result-vs">
+                    VS
+                </div>
+
+                <div class="admin-result-team">
+                    <img src="@Model.AwayTeamLogoUrl" alt="@Model.AwayTeamName logo" />
+                    <h4>@Model.AwayTeamName</h4>
+                </div>
+            </div>
+
+            <div class="row g-3 text-center">
+                <div class="col-md-6">
+                    <div class="admin-info-box">
+                        <span>Match Date</span>
+                        <strong>@Model.MatchDate.ToString("dd MMM yyyy HH:mm")</strong>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="admin-info-box">
+                        <span>Stadium</span>
+                        <strong>@Model.StadiumName</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4 flex-wrap">
+                <a href="/Admin/AdminFixture/Index" class="btn btn-light rounded-pill px-4">
+                    Back to Fixtures
+                </a>
+
+                <a href="/Fixtures/Detail/@Model.FixtureId" target="_blank" class="btn btn-outline-primary rounded-pill px-4">
+                    View Public Detail
+                </a>
+            </div>
+        </div>
+
+        <div class="content-card mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="mb-1">Timeline Events</h4>
+                    <p class="text-muted mb-0">@Model.MatchEvents.Count event(s) found</p>
+                </div>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success rounded-4">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger rounded-4">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
+            @if (!Model.MatchEvents.Any())
+            {
+                <div class="alert alert-warning rounded-4 mb-0">
+                    No match events added yet.
+                </div>
+            }
+            else
+            {
+                <div class="admin-event-list">
+                    @foreach (var item in Model.MatchEvents)
+                    {
+                        <div class="admin-event-item">
+                            <div class="admin-event-minute">
+                                @item.Minute'
+                            </div>
+
+                            <div class="admin-event-icon">
+                                @GetIcon(item.EventType)
+                            </div>
+
+                            <div class="admin-event-content">
+                                <div>
+                                    <strong>@item.PlayerName</strong>
+                                    <span>@item.EventType · @item.TeamShortName</span>
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(item.AssistPlayerName))
+                                {
+                                    <p>Assist: @item.AssistPlayerName</p>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(item.RelatedPlayerName))
+                                {
+                                    <p>Related: @item.RelatedPlayerName</p>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(item.Description))
+                                {
+                                    <p>@item.Description</p>
+                                }
+                            </div>
+
+                            <a href="/Admin/AdminMatchEvent/Delete/@item.MatchEventId?fixtureId=@Model.FixtureId"
+                               class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                               onclick="return confirm('Delete this match event?');">
+                                Delete
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-xl-5">
+        <div class="form-card">
+            <h4 class="mb-4">Add Match Event</h4>
+
+            <form asp-area="Admin" asp-controller="AdminMatchEvent" asp-action="Create" method="post">
+                <input type="hidden" asp-for="FixtureId" />
+
+                <div class="mb-3">
+                    <label asp-for="TeamId" class="form-label">Team</label>
+                    <select asp-for="TeamId" class="form-select">
+                        <option value="@Model.HomeTeamId">@Model.HomeTeamName</option>
+                        <option value="@Model.AwayTeamId">@Model.AwayTeamName</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="EventType" class="form-label">Event Type</label>
+                    <select asp-for="EventType" class="form-select">
+                        <option value="Goal">Goal</option>
+                        <option value="Penalty">Penalty</option>
+                        <option value="YellowCard">Yellow Card</option>
+                        <option value="RedCard">Red Card</option>
+                        <option value="Substitution">Substitution</option>
+                        <option value="VAR">VAR</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Minute" class="form-label">Minute</label>
+                    <input asp-for="Minute" type="number" min="0" max="130" class="form-control" placeholder="Example: 23" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PlayerName" class="form-label">Player Name</label>
+                    <input asp-for="PlayerName" class="form-control" placeholder="Example: Erling Haaland" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AssistPlayerName" class="form-label">Assist Player</label>
+                    <input asp-for="AssistPlayerName" class="form-control" placeholder="Optional" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="RelatedPlayerName" class="form-label">Related Player</label>
+                    <input asp-for="RelatedPlayerName" class="form-control" placeholder="Optional for substitutions / VAR" />
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="4" placeholder="Short event description..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary rounded-pill px-5 w-100">
+                    Add Event
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetIcon(string eventType)
+    {
+        return eventType switch
+        {
+            "Goal" => "⚽",
+            "Penalty" => "🎯",
+            "YellowCard" => "🟨",
+            "RedCard" => "🟥",
+            "Substitution" => "🔁",
+            "VAR" => "📺",
+            _ => "•"
+        };
+    }
+}

@@ -93,10 +93,17 @@
                             </td>
 
                             <td class="text-end">
-                                <a href="/Admin/AdminFixture/EditResult/@fixture.FixtureId"
-                                   class="btn btn-sm btn-primary rounded-pill px-3">
-                                    Update Result
-                                </a>
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="/Admin/AdminMatchEvent/Index?fixtureId=@fixture.FixtureId"
+                                       class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                        Events
+                                    </a>
+
+                                    <a href="/Admin/AdminFixture/EditResult/@fixture.FixtureId"
+                                       class="btn btn-sm btn-primary rounded-pill px-3">
+                                        Update Result
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }
