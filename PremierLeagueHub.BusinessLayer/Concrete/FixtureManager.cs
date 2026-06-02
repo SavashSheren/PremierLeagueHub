@@ -57,6 +57,25 @@ public class FixtureManager : IFixtureService
         return true;
     }
 
+    public async Task<bool> UpdateFixtureResultAsync(UpdateFixtureResultDto updateFixtureResultDto)
+    {
+        var fixture = await _fixtureDal.GetByIdAsync(updateFixtureResultDto.FixtureId);
+
+        if (fixture == null)
+        {
+            return false;
+        }
+
+        fixture.HomeScore = updateFixtureResultDto.HomeScore;
+        fixture.AwayScore = updateFixtureResultDto.AwayScore;
+        fixture.Status = string.IsNullOrWhiteSpace(updateFixtureResultDto.Status)
+            ? "Finished"
+            : updateFixtureResultDto.Status;
+
+        await _fixtureDal.UpdateAsync(fixture);
+        return true;
+    }
+
     public async Task<bool> DeleteFixtureAsync(int id)
     {
         var fixture = await _fixtureDal.GetByIdAsync(id);
@@ -91,6 +110,10 @@ public class FixtureManager : IFixtureService
             Season = fixture.Season,
             StadiumName = fixture.StadiumName,
             IsTopMatch = fixture.IsTopMatch,
+
+            HomeScore = fixture.HomeScore,
+            AwayScore = fixture.AwayScore,
+
             Status = fixture.Status
         };
     }
@@ -116,6 +139,10 @@ public class FixtureManager : IFixtureService
             Season = fixture.Season,
             StadiumName = fixture.StadiumName,
             IsTopMatch = fixture.IsTopMatch,
+
+            HomeScore = fixture.HomeScore,
+            AwayScore = fixture.AwayScore,
+
             Status = fixture.Status
         };
     }

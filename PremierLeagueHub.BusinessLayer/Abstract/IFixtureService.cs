@@ -8,5 +8,6 @@ public interface IFixtureService
     Task<GetFixtureByIdDto?> GetFixtureByIdAsync(int id);
     Task CreateFixtureAsync(CreateFixtureDto createFixtureDto);
     Task<bool> UpdateFixtureAsync(UpdateFixtureDto updateFixtureDto);
+    Task<bool> UpdateFixtureResultAsync(UpdateFixtureResultDto updateFixtureResultDto);
     Task<bool> DeleteFixtureAsync(int id);
 }

@@ -24,5 +24,10 @@ public class ResultFixtureDto
 
     public bool IsTopMatch { get; set; }
 
+    public int? HomeScore { get; set; }
+    public int? AwayScore { get; set; }
+
+    public bool HasResult => HomeScore.HasValue && AwayScore.HasValue;
+
     public string Status { get; set; } = string.Empty;
 }

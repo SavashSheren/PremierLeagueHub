@@ -20,5 +20,8 @@ public class Fixture
 
     public bool IsTopMatch { get; set; }
 
+    public int? HomeScore { get; set; }
+    public int? AwayScore { get; set; }
+
     public string Status { get; set; } = "Scheduled";
 }
