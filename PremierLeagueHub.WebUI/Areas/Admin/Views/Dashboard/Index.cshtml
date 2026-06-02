@@ -2,48 +2,47 @@
 
 @{
     ViewData["Title"] = "Admin Dashboard";
-    ViewData["Description"] = "Track Premier League teams, activity status and management overview.";
+    ViewData["Description"] = "Premier League platform overview, fixtures, results and match events.";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@if (ViewBag.ApiError != null)
+{
+    <div class="alert alert-danger rounded-4">
+        @ViewBag.ApiError
+    </div>
 }
 
 <div class="row g-4 mb-4">
     <div class="col-xl-3 col-md-6">
-        <div class="dashboard-stat-card">
-            <div>
-                <span>Total Teams</span>
-                <h2>@Model.TotalTeams</h2>
-            </div>
-            <div class="stat-icon bg-primary-subtle text-primary">T</div>
+        <div class="dashboard-metric-card">
+            <span>Total Teams</span>
+            <h3>@Model.TotalTeams</h3>
+            <p>@Model.ActiveTeams active / @Model.PassiveTeams passive</p>
         </div>
     </div>
 
     <div class="col-xl-3 col-md-6">
-        <div class="dashboard-stat-card">
-            <div>
-                <span>Active Teams</span>
-                <h2>@Model.ActiveTeams</h2>
-            </div>
-            <div class="stat-icon bg-success-subtle text-success">A</div>
+        <div class="dashboard-metric-card blue">
+            <span>Total Fixtures</span>
+            <h3>@Model.TotalFixtures</h3>
+            <p>@Model.TopMatchCount top match(es)</p>
         </div>
     </div>
 
     <div class="col-xl-3 col-md-6">
-        <div class="dashboard-stat-card">
-            <div>
-                <span>Passive Teams</span>
-                <h2>@Model.PassiveTeams</h2>
-            </div>
-            <div class="stat-icon bg-warning-subtle text-warning">P</div>
+        <div class="dashboard-metric-card green">
+            <span>Finished Matches</span>
+            <h3>@Model.FinishedFixtures</h3>
+            <p>@Model.ScheduledFixtures scheduled / @Model.LiveFixtures live</p>
         </div>
     </div>
 
     <div class="col-xl-3 col-md-6">
-        <div class="dashboard-stat-card">
-            <div>
-                <span>Cities</span>
-                <h2>@Model.TotalCities</h2>
-            </div>
-            <div class="stat-icon bg-info-subtle text-info">C</div>
+        <div class="dashboard-metric-card purple">
+            <span>Match Events</span>
+            <h3>@Model.TotalMatchEvents</h3>
+            <p>@Model.GoalEvents goals / @Model.CardEvents cards</p>
         </div>
     </div>
 </div>
@@ -53,19 +52,19 @@
         <div class="content-card">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h4 class="mb-1">Latest Teams</h4>
-                    <p class="text-muted mb-0">Recently added Premier League clubs.</p>
+                    <h4 class="mb-1">Latest Fixtures</h4>
+                    <p class="text-muted mb-0">Recent match schedule and result overview</p>
                 </div>
 
-                <a href="/Admin/AdminTeam/Index" class="btn btn-outline-primary rounded-pill px-4">
-                    View All
+                <a href="/Admin/AdminFixture/Index" class="btn btn-outline-primary rounded-pill px-4">
+                    Manage Fixtures
                 </a>
             </div>
 
-            @if (!Model.LatestTeams.Any())
+            @if (!Model.LatestFixtures.Any())
             {
                 <div class="alert alert-warning rounded-4 mb-0">
-                    No teams found yet.
+                    No fixtures found.
                 </div>
             }
             else
@@ -74,38 +73,70 @@
                     <table class="table align-middle admin-table mb-0">
                         <thead>
                             <tr>
-                                <th>Club</th>
-                                <th>City</th>
-                                <th>Stadium</th>
-                                <th>Manager</th>
+                                <th>Match</th>
+                                <th>Date</th>
                                 <th>Status</th>
+                                <th>Score</th>
+                                <th class="text-end">Action</th>
                             </tr>
                         </thead>
+
                         <tbody>
-                            @foreach (var team in Model.LatestTeams)
+                            @foreach (var fixture in Model.LatestFixtures)
                             {
                                 <tr>
                                     <td>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <img src="@team.LogoUrl" class="table-team-logo" alt="@team.TeamName logo" />
+                                        <div class="dashboard-fixture-match">
                                             <div>
-                                                <strong>@team.TeamName</strong>
-                                                <div class="text-muted small">@team.ShortName</div>
+                                                <img src="@fixture.HomeTeamLogoUrl" alt="@fixture.HomeTeamName logo" />
+                                                <strong>@fixture.HomeTeamShortName</strong>
+                                            </div>
+
+                                            <span>vs</span>
+
+                                            <div>
+                                                <img src="@fixture.AwayTeamLogoUrl" alt="@fixture.AwayTeamName logo" />
+                                                <strong>@fixture.AwayTeamShortName</strong>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>@team.City</td>
-                                    <td>@team.StadiumName</td>
-                                    <td>@team.ManagerName</td>
+
                                     <td>
-                                        @if (team.IsActive)
+                                        <strong>@fixture.MatchDate.ToString("dd MMM yyyy")</strong>
+                                        <div class="text-muted small">@fixture.MatchDate.ToString("HH:mm")</div>
+                                    </td>
+
+                                    <td>
+                                        @if (fixture.Status == "Finished")
                                         {
-                                            <span class="badge bg-success badge-status">Active</span>
+                                            <span class="badge bg-success badge-status">Finished</span>
+                                        }
+                                        else if (fixture.Status == "Live")
+                                        {
+                                            <span class="badge bg-danger badge-status">Live</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-secondary badge-status">Passive</span>
+                                            <span class="badge bg-secondary badge-status">@fixture.Status</span>
                                         }
+                                    </td>
+
+                                    <td>
+                                        @if (fixture.HasResult)
+                                        {
+                                            <strong>@fixture.HomeScore - @fixture.AwayScore</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not played</span>
+                                        }
+                                    </td>
+
+                                    <td class="text-end">
+                                        <a href="/Admin/AdminMatchEvent/Index?fixtureId=@fixture.FixtureId"
+                                           class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                            Events
+                                        </a>
                                     </td>
                                 </tr>
                             }
@@ -117,18 +148,112 @@
     </div>
 
     <div class="col-xl-4">
+        <div class="content-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="mb-1">Recent Events</h4>
+                    <p class="text-muted mb-0">Latest goals, cards and timeline actions</p>
+                </div>
+            </div>
+
+            @if (!Model.LatestMatchEvents.Any())
+            {
+                <div class="alert alert-warning rounded-4 mb-0">
+                    No match events found.
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-event-list">
+                    @foreach (var item in Model.LatestMatchEvents)
+                    {
+                        <div class="dashboard-event-item">
+                            <div class="dashboard-event-minute">
+                                @item.Minute'
+                            </div>
+
+                            <div class="dashboard-event-body">
+                                <strong>@item.PlayerName</strong>
+                                <span>@item.EventType · @item.TeamShortName</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-xl-5">
         <div class="content-card">
-            <h4 class="mb-1">Quick Actions</h4>
-            <p class="text-muted mb-4">Fast management shortcuts.</p>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="mb-1">Latest Teams</h4>
+                    <p class="text-muted mb-0">Recently added clubs</p>
+                </div>
 
-            <div class="d-grid gap-3">
-                <a href="/Admin/AdminTeam/CreateTeam" class="btn btn-primary rounded-pill py-3">
-                    Add New Team
-                </a>
-
-                <a href="/Admin/AdminTeam/Index" class="btn btn-light rounded-pill py-3">
+                <a href="/Admin/AdminTeam/Index" class="btn btn-outline-primary rounded-pill px-4">
                     Manage Teams
                 </a>
+            </div>
+
+            @if (!Model.LatestTeams.Any())
+            {
+                <div class="alert alert-warning rounded-4 mb-0">
+                    No teams found.
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-team-list">
+                    @foreach (var team in Model.LatestTeams)
+                    {
+                        <div class="dashboard-team-item">
+                            <img src="@team.LogoUrl" alt="@team.TeamName logo" />
+
+                            <div>
+                                <strong>@team.TeamName</strong>
+                                <span>@team.City · @team.StadiumName</span>
+                            </div>
+
+                            @if (team.IsActive)
+                            {
+                                <span class="badge bg-success badge-status ms-auto">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary badge-status ms-auto">Passive</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-xl-7">
+        <div class="content-card">
+            <h4 class="mb-3">Project Snapshot</h4>
+
+            <div class="dashboard-snapshot-grid">
+                <div>
+                    <span>Architecture</span>
+                    <strong>ASP.NET Core MVC + Web API</strong>
+                </div>
+
+                <div>
+                    <span>Data Flow</span>
+                    <strong>DTO → Service → API → UI</strong>
+                </div>
+
+                <div>
+                    <span>Football Modules</span>
+                    <strong>Teams, Fixtures, Results, Events</strong>
+                </div>
+
+                <div>
+                    <span>External API</span>
+                    <strong>Integration-ready foundation</strong>
+                </div>
             </div>
         </div>
     </div>

@@ -367,3 +367,202 @@
         grid-column: 1 / -1;
     }
 }
+.dashboard-metric-card {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #fff;
+    border-radius: 24px;
+    padding: 24px;
+    min-height: 150px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+    position: relative;
+    overflow: hidden;
+}
+
+    .dashboard-metric-card::after {
+        content: "";
+        position: absolute;
+        width: 140px;
+        height: 140px;
+        right: -45px;
+        top: -45px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .dashboard-metric-card.blue {
+        background: linear-gradient(135deg, #1d4ed8, #0f172a);
+    }
+
+    .dashboard-metric-card.green {
+        background: linear-gradient(135deg, #059669, #0f172a);
+    }
+
+    .dashboard-metric-card.purple {
+        background: linear-gradient(135deg, #7c3aed, #0f172a);
+    }
+
+    .dashboard-metric-card span {
+        display: block;
+        font-size: 13px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.75);
+        margin-bottom: 12px;
+    }
+
+    .dashboard-metric-card h3 {
+        font-size: 42px;
+        font-weight: 900;
+        margin: 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .dashboard-metric-card p {
+        margin: 8px 0 0;
+        color: rgba(255, 255, 255, 0.72);
+        font-weight: 700;
+        position: relative;
+        z-index: 2;
+    }
+
+.dashboard-fixture-match {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 230px;
+}
+
+    .dashboard-fixture-match div {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .dashboard-fixture-match img {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        border-radius: 50%;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        padding: 4px;
+    }
+
+    .dashboard-fixture-match span {
+        color: #94a3b8;
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+.dashboard-event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dashboard-event-item {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 14px;
+}
+
+.dashboard-event-minute {
+    color: #2563eb;
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.dashboard-event-body strong {
+    display: block;
+    color: #0f172a;
+    font-weight: 900;
+}
+
+.dashboard-event-body span {
+    display: block;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+    margin-top: 2px;
+}
+
+.dashboard-team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dashboard-team-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 14px;
+}
+
+    .dashboard-team-item img {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+        border-radius: 50%;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        padding: 6px;
+    }
+
+    .dashboard-team-item strong {
+        display: block;
+        color: #0f172a;
+        font-weight: 900;
+    }
+
+    .dashboard-team-item span {
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+.dashboard-snapshot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+    .dashboard-snapshot-grid div {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        padding: 18px;
+    }
+
+    .dashboard-snapshot-grid span {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 800;
+        margin-bottom: 6px;
+    }
+
+    .dashboard-snapshot-grid strong {
+        color: #0f172a;
+        font-weight: 900;
+    }
+
+@media(max-width: 768px) {
+    .dashboard-snapshot-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-fixture-match {
+        min-width: 180px;
+    }
+}
