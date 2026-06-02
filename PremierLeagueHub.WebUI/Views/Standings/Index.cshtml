@@ -11,7 +11,10 @@
             <div class="col-lg-8">
                 <div class="league-badge">Premier League</div>
                 <h1>League <span>Standings</span></h1>
-                <p>Demo standings table generated from seeded Premier League teams.</p>
+                <p>
+                    Calculated from @Model.FinishedFixturesCount finished fixture(s).
+                    @Model.ScheduledFixturesCount scheduled fixture(s) remaining.
+                </p>
             </div>
 
             <div class="col-lg-4 mt-3 mt-lg-0">
@@ -49,7 +52,16 @@
             <div class="standing-stat-card">
                 <span>Best Defense</span>
                 <h3>@Model.BestDefense?.GoalsAgainst</h3>
-                <p>@Model.BestDefense?.TeamName conceded</p>
+                <p>
+                    @if (Model.BestDefense != null)
+                    {
+                        @($"{Model.BestDefense.TeamName} conceded")
+                    }
+                    else
+                    {
+                        @("No finished match data")
+                    }
+                </p>
             </div>
         </div>
 
@@ -116,11 +128,18 @@
 
                         <td>
                             <div class="form-pills">
-                                @foreach (var form in row.Form)
+                                @if (row.Form.Any())
                                 {
-                                    <span class="form-pill @(form == "W" ? "form-win" : form == "D" ? "form-draw" : "form-loss")">
-                                        @form
-                                    </span>
+                                    @foreach (var form in row.Form)
+                                    {
+                                        <span class="form-pill @(form == "W" ? "form-win" : form == "D" ? "form-draw" : "form-loss")">
+                                            @form
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
                                 }
                             </div>
                         </td>

@@ -1,17 +1,22 @@
-﻿namespace PremierLeagueHub.WebUI.Models
+﻿namespace PremierLeagueHub.WebUI.Models;
+
+public class StandingsViewModel
 {
-    public class StandingsViewModel
-    {
-        public List<StandingRowViewModel> Rows { get; set; } = new List<StandingRowViewModel>();
+    public List<StandingRowViewModel> Rows { get; set; } = new List<StandingRowViewModel>();
 
-        public StandingRowViewModel? Leader => Rows.FirstOrDefault();
+    public int FinishedFixturesCount { get; set; }
+    public int ScheduledFixturesCount { get; set; }
 
-        public StandingRowViewModel? BestAttack =>
-            Rows.OrderByDescending(x => x.GoalsFor).FirstOrDefault();
+    public StandingRowViewModel? Leader => Rows.FirstOrDefault();
 
-        public StandingRowViewModel? BestDefense =>
-            Rows.OrderBy(x => x.GoalsAgainst).FirstOrDefault();
+    public StandingRowViewModel? BestAttack =>
+        Rows.OrderByDescending(x => x.GoalsFor).FirstOrDefault();
 
-        public int TotalTeams => Rows.Count;
-    }
+    public StandingRowViewModel? BestDefense =>
+        Rows
+            .Where(x => x.Played > 0)
+            .OrderBy(x => x.GoalsAgainst)
+            .FirstOrDefault();
+
+    public int TotalTeams => Rows.Count;
 }
