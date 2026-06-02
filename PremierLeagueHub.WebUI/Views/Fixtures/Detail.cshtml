@@ -1,0 +1,155 @@
+﻿@model GetFixtureByIdDto
+
+@{
+    ViewData["Title"] = $"{Model.HomeTeamName} vs {Model.AwayTeamName}";
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+}
+
+<section class="fixture-detail-hero">
+    <div class="container">
+        <div class="fixture-detail-badges">
+            <span>Premier League</span>
+            <span>Week @Model.WeekNumber</span>
+
+            @if (Model.IsTopMatch)
+            {
+                <span class="gold">Top Match</span>
+            }
+            else
+            {
+                <span>@Model.Status</span>
+            }
+        </div>
+
+        <div class="fixture-detail-scoreboard">
+            <div class="fixture-detail-team home">
+                <img src="@Model.HomeTeamLogoUrl" alt="@Model.HomeTeamName logo" />
+                <h2>@Model.HomeTeamName</h2>
+                <p>@Model.HomeTeamShortName</p>
+            </div>
+
+            <div class="fixture-detail-center">
+                <div class="fixture-detail-date">
+                    @Model.MatchDate.ToString("dd MMM yyyy")
+                </div>
+
+                <div class="fixture-detail-vs">
+                    VS
+                </div>
+
+                <div class="fixture-detail-time">
+                    @Model.MatchDate.ToString("HH:mm")
+                </div>
+            </div>
+
+            <div class="fixture-detail-team away">
+                <img src="@Model.AwayTeamLogoUrl" alt="@Model.AwayTeamName logo" />
+                <h2>@Model.AwayTeamName</h2>
+                <p>@Model.AwayTeamShortName</p>
+            </div>
+        </div>
+
+        <div class="fixture-detail-meta-strip">
+            <div>
+                <span>Season</span>
+                <strong>@Model.Season</strong>
+            </div>
+
+            <div>
+                <span>Stadium</span>
+                <strong>@Model.StadiumName</strong>
+            </div>
+
+            <div>
+                <span>Status</span>
+                <strong>@Model.Status</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container fixture-detail-content">
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger rounded-4">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <a href="/Fixtures/Index" class="btn btn-light back-btn">
+            Back to Fixtures
+        </a>
+
+        <a href="/Standings/Index" class="btn btn-outline-primary rounded-pill px-4">
+            View Standings
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <div class="fixture-preview-card">
+                <div class="fixture-card-title">
+                    Match Preview
+                </div>
+
+                <h3>@Model.HomeTeamName vs @Model.AwayTeamName</h3>
+
+                <p>
+                    This Premier League fixture brings together two clubs with different tactical profiles,
+                    squad identities and competitive ambitions. The match detail page is now connected to
+                    the Fixture API and ready for future live score, events and statistics modules.
+                </p>
+
+                <div class="fixture-preview-grid">
+                    <div>
+                        <span>Home Team</span>
+                        <strong>@Model.HomeTeamName</strong>
+                    </div>
+
+                    <div>
+                        <span>Away Team</span>
+                        <strong>@Model.AwayTeamName</strong>
+                    </div>
+
+                    <div>
+                        <span>Kick-off</span>
+                        <strong>@Model.MatchDate.ToString("dd MMM yyyy HH:mm")</strong>
+                    </div>
+
+                    <div>
+                        <span>Venue</span>
+                        <strong>@Model.StadiumName</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="fixture-preview-card">
+                <div class="fixture-card-title">
+                    Match Status
+                </div>
+
+                <div class="fixture-status-big">
+                    @Model.Status
+                </div>
+
+                <p class="mb-4">
+                    Result, score timeline, cards, substitutions and match statistics will be added in the next module.
+                </p>
+
+                <div class="d-grid gap-2">
+                    <a href="/Home/TeamDetail/@Model.HomeTeamId" class="btn btn-primary rounded-pill">
+                        View @Model.HomeTeamShortName
+                    </a>
+
+                    <a href="/Home/TeamDetail/@Model.AwayTeamId" class="btn btn-light rounded-pill">
+                        View @Model.AwayTeamShortName
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

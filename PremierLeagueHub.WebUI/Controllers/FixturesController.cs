@@ -38,4 +38,27 @@ public class FixturesController : Controller
             return View(new PublicFixtureListViewModel());
         }
     }
+
+    public async Task<IActionResult> Detail(int id)
+    {
+        var client = _httpClientFactory.CreateClient("PremierLeagueApi");
+
+        try
+        {
+            var fixture = await client.GetFromJsonAsync<GetFixtureByIdDto>($"Fixtures/{id}");
+
+            if (fixture == null)
+            {
+                TempData["ErrorMessage"] = "Fixture not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(fixture);
+        }
+        catch
+        {
+            TempData["ErrorMessage"] = "The fixture detail could not be loaded.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
 }
