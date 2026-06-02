@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace PremierLeagueHub.WebApi.ExternalFootball;
 
@@ -25,6 +26,8 @@ public class ApiFootballExternalFootballApiService : IExternalFootballApiService
 
     private string ApiKey => GetString("ExternalFootballApi:ApiKey", string.Empty);
 
+    private string RapidApiHost => GetString("ExternalFootballApi:RapidApiHost", "api-football-v1.p.rapidapi.com");
+
     public async Task<string> GetPremierLeagueFixturesPreviewRawAsync()
     {
         if (!IsConfigured)
@@ -38,7 +41,8 @@ public class ApiFootballExternalFootballApiService : IExternalFootballApiService
             HttpMethod.Get,
             $"fixtures?league={PremierLeagueId}&season={Season}&next=10");
 
-        request.Headers.Add("x-apisports-key", ApiKey);
+        AddAuthenticationHeaders(request);
+
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
         var response = await client.SendAsync(request);
@@ -50,7 +54,45 @@ public class ApiFootballExternalFootballApiService : IExternalFootballApiService
                 $"External football API request failed. Status: {(int)response.StatusCode}. Response: {content}");
         }
 
+        ThrowIfApiFootballReturnedError(content);
+
         return content;
+    }
+
+    private void AddAuthenticationHeaders(HttpRequestMessage request)
+    {
+        if (Provider.Equals("RapidApi", StringComparison.OrdinalIgnoreCase))
+        {
+            request.Headers.Add("x-rapidapi-key", ApiKey);
+            request.Headers.Add("x-rapidapi-host", RapidApiHost);
+            return;
+        }
+
+        request.Headers.Add("x-apisports-key", ApiKey);
+    }
+
+    private static void ThrowIfApiFootballReturnedError(string json)
+    {
+        using var document = JsonDocument.Parse(json);
+
+        if (!document.RootElement.TryGetProperty("errors", out var errorsElement))
+        {
+            return;
+        }
+
+        var hasErrors = errorsElement.ValueKind switch
+        {
+            JsonValueKind.Object => errorsElement.EnumerateObject().Any(),
+            JsonValueKind.Array => errorsElement.GetArrayLength() > 0,
+            _ => false
+        };
+
+        if (!hasErrors)
+        {
+            return;
+        }
+
+        throw new HttpRequestException($"External football API returned an error: {errorsElement}");
     }
 
     private string GetString(string key, string defaultValue)
@@ -59,7 +101,7 @@ public class ApiFootballExternalFootballApiService : IExternalFootballApiService
 
         return string.IsNullOrWhiteSpace(value)
             ? defaultValue
-            : value;
+            : value.Trim();
     }
 
     private int GetInt(string key, int defaultValue)

@@ -2,6 +2,8 @@
 using PremierLeagueHub.BusinessLayer.Abstract;
 using PremierLeagueHub.DtoLayer.FixtureDtos;
 using PremierLeagueHub.DtoLayer.TeamDtos;
+using PremierLeagueHub.DtoLayer.MatchEventDtos;
+
 
 namespace PremierLeagueHub.WebApi.Controllers;
 
@@ -12,13 +14,15 @@ public class DevelopmentSeedController : ControllerBase
     private readonly ITeamService _teamService;
     private readonly IFixtureService _fixtureService;
     private readonly IWebHostEnvironment _environment;
+    private readonly IMatchEventService _matchEventService;
 
     public DevelopmentSeedController(
-        ITeamService teamService,
+        ITeamService teamService, IMatchEventService matchEventService,
         IFixtureService fixtureService,
         IWebHostEnvironment environment)
     {
         _teamService = teamService;
+        _matchEventService = matchEventService;
         _fixtureService = fixtureService;
         _environment = environment;
     }
@@ -137,6 +141,138 @@ public class DevelopmentSeedController : ControllerBase
             SkippedCount = skippedCount,
             TotalSeedFixtures = fixtureSeeds.Count
         });
+    }
+    [HttpPost("demo-results-and-events")]
+    public async Task<IActionResult> SeedDemoResultsAndEvents()
+    {
+        if (!_environment.IsDevelopment())
+        {
+            return BadRequest("Seed endpoint is only available in Development environment.");
+        }
+
+        var fixtures = await _fixtureService.GetAllFixturesAsync();
+
+        var invalidFixtures = fixtures
+            .Where(x =>
+                x.HomeTeamId == x.AwayTeamId ||
+                x.HomeTeamShortName.Equals(x.AwayTeamShortName, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var deletedInvalidFixtures = 0;
+
+        foreach (var invalidFixture in invalidFixtures)
+        {
+            var deleted = await _fixtureService.DeleteFixtureAsync(invalidFixture.FixtureId);
+
+            if (deleted)
+            {
+                deletedInvalidFixtures++;
+            }
+        }
+
+        fixtures = fixtures
+            .Where(x =>
+                x.HomeTeamId != x.AwayTeamId &&
+                !x.HomeTeamShortName.Equals(x.AwayTeamShortName, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var demoMatches = GetDemoMatchDataSeeds();
+
+        var updatedResults = 0;
+        var createdEvents = 0;
+        var skippedFixtures = 0;
+        var skippedEvents = 0;
+
+        foreach (var demoMatch in demoMatches)
+        {
+            var fixture = fixtures.FirstOrDefault(x =>
+                x.HomeTeamShortName.Equals(demoMatch.HomeShortName, StringComparison.OrdinalIgnoreCase) &&
+                x.AwayTeamShortName.Equals(demoMatch.AwayShortName, StringComparison.OrdinalIgnoreCase));
+
+            if (fixture == null)
+            {
+                skippedFixtures++;
+                continue;
+            }
+
+            var resultUpdated = await _fixtureService.UpdateFixtureResultAsync(new UpdateFixtureResultDto
+            {
+                FixtureId = fixture.FixtureId,
+                HomeScore = demoMatch.HomeScore,
+                AwayScore = demoMatch.AwayScore,
+                Status = "Finished"
+            });
+
+            if (resultUpdated)
+            {
+                updatedResults++;
+            }
+
+            var existingEvents = await _matchEventService.GetMatchEventsByFixtureIdAsync(fixture.FixtureId);
+
+            foreach (var eventSeed in demoMatch.Events)
+            {
+                var teamId = GetEventTeamId(fixture, eventSeed.TeamShortName);
+
+                if (teamId == 0)
+                {
+                    skippedEvents++;
+                    continue;
+                }
+
+                var alreadyExists = existingEvents.Any(x =>
+                    x.TeamId == teamId &&
+                    x.Minute == eventSeed.Minute &&
+                    x.EventType.Equals(eventSeed.EventType, StringComparison.OrdinalIgnoreCase) &&
+                    x.PlayerName.Equals(eventSeed.PlayerName, StringComparison.OrdinalIgnoreCase));
+
+                if (alreadyExists)
+                {
+                    skippedEvents++;
+                    continue;
+                }
+
+                await _matchEventService.CreateMatchEventAsync(new CreateMatchEventDto
+                {
+                    FixtureId = fixture.FixtureId,
+                    TeamId = teamId,
+                    Minute = eventSeed.Minute,
+                    EventType = eventSeed.EventType,
+                    PlayerName = eventSeed.PlayerName,
+                    AssistPlayerName = eventSeed.AssistPlayerName,
+                    RelatedPlayerName = eventSeed.RelatedPlayerName,
+                    Description = eventSeed.Description
+                });
+
+                createdEvents++;
+            }
+        }
+
+        return Ok(new
+        {
+            Message = "Demo results and match events seed completed.",
+            DeletedInvalidFixtures = deletedInvalidFixtures,
+            UpdatedResults = updatedResults,
+            CreatedEvents = createdEvents,
+            SkippedFixtures = skippedFixtures,
+            SkippedEvents = skippedEvents,
+            TotalDemoMatches = demoMatches.Count
+        });
+    }
+
+    private static int GetEventTeamId(ResultFixtureDto fixture, string teamShortName)
+    {
+        if (fixture.HomeTeamShortName.Equals(teamShortName, StringComparison.OrdinalIgnoreCase))
+        {
+            return fixture.HomeTeamId;
+        }
+
+        if (fixture.AwayTeamShortName.Equals(teamShortName, StringComparison.OrdinalIgnoreCase))
+        {
+            return fixture.AwayTeamId;
+        }
+
+        return 0;
     }
 
     private static List<CreateTeamDto> GetPremierLeagueTeams()
@@ -449,18 +585,154 @@ public class DevelopmentSeedController : ControllerBase
     private static List<FixtureSeed> GetWeek34FixtureSeeds()
     {
         return new List<FixtureSeed>
-        {
-            new("MCI", "CHE", new DateTime(2026, 4, 18, 20, 0, 0), 34, "2025/2026", "Etihad Stadium", true, "Scheduled"),
-            new("ARS", "LIV", new DateTime(2026, 4, 19, 17, 30, 0), 34, "2025/2026", "Emirates Stadium", true, "Scheduled"),
-            new("MUN", "TOT", new DateTime(2026, 4, 19, 20, 0, 0), 34, "2025/2026", "Old Trafford", true, "Scheduled"),
-            new("NEW", "AVL", new DateTime(2026, 4, 20, 14, 30, 0), 34, "2025/2026", "St James' Park", false, "Scheduled"),
-            new("WHU", "CRY", new DateTime(2026, 4, 20, 16, 0, 0), 34, "2025/2026", "London Stadium", false, "Scheduled"),
-            new("FUL", "BRE", new DateTime(2026, 4, 20, 16, 0, 0), 34, "2025/2026", "Craven Cottage", false, "Scheduled"),
-            new("BHA", "BOU", new DateTime(2026, 4, 20, 16, 0, 0), 34, "2025/2026", "American Express Stadium", false, "Scheduled"),
-            new("EVE", "NFO", new DateTime(2026, 4, 20, 18, 30, 0), 34, "2025/2026", "Hill Dickinson Stadium", false, "Scheduled"),
-            new("LEE", "SUN", new DateTime(2026, 4, 21, 20, 0, 0), 34, "2025/2026", "Elland Road", false, "Scheduled"),
-            new("WOL", "BUR", new DateTime(2026, 4, 21, 22, 0, 0), 34, "2025/2026", "Molineux Stadium", false, "Scheduled")
-        };
+    {
+        new("MCI", "CHE", new DateTime(2026, 4, 18, 20, 0, 0), 34, "2025/2026", "Etihad Stadium", true, "Scheduled"),
+        new("ARS", "LIV", new DateTime(2026, 4, 19, 17, 30, 0), 34, "2025/2026", "Emirates Stadium", true, "Scheduled"),
+        new("MUN", "TOT", new DateTime(2026, 4, 19, 20, 0, 0), 34, "2025/2026", "Old Trafford", true, "Scheduled"),
+        new("NEW", "AVL", new DateTime(2026, 4, 20, 14, 30, 0), 34, "2025/2026", "St James' Park", false, "Scheduled"),
+        new("WHU", "CRY", new DateTime(2026, 4, 20, 16, 0, 0), 34, "2025/2026", "London Stadium", false, "Scheduled"),
+        new("FUL", "BRE", new DateTime(2026, 4, 20, 16, 0, 0), 34, "2025/2026", "Craven Cottage", false, "Scheduled"),
+        new("BHA", "BOU", new DateTime(2026, 4, 20, 16, 0, 0), 34, "2025/2026", "American Express Stadium", false, "Scheduled"),
+        new("EVE", "NFO", new DateTime(2026, 4, 20, 18, 30, 0), 34, "2025/2026", "Hill Dickinson Stadium", false, "Scheduled"),
+        new("LEE", "SUN", new DateTime(2026, 4, 21, 20, 0, 0), 34, "2025/2026", "Elland Road", false, "Scheduled"),
+        new("WOL", "BUR", new DateTime(2026, 4, 21, 22, 0, 0), 34, "2025/2026", "Molineux Stadium", false, "Scheduled")
+    };
+    }
+
+    private static List<DemoMatchDataSeed> GetDemoMatchDataSeeds()
+    {
+        return new List<DemoMatchDataSeed>
+    {
+        new(
+            "MCI",
+            "CHE",
+            2,
+            1,
+            new List<DemoEventSeed>
+            {
+                new("MCI", 23, "Goal", "Erling Haaland", "Kevin De Bruyne", "", "Clinical finish from inside the box."),
+                new("CHE", 41, "YellowCard", "Enzo Fernandez", "", "", "Booked after a late challenge."),
+                new("CHE", 67, "Goal", "Cole Palmer", "", "", "Low finish into the bottom corner."),
+                new("MCI", 80, "Goal", "Phil Foden", "Bernardo Silva", "", "Late winner after a fast attacking move.")
+            }
+        ),
+
+        new(
+            "ARS",
+            "LIV",
+            2,
+            2,
+            new List<DemoEventSeed>
+            {
+                new("ARS", 18, "Goal", "Bukayo Saka", "Martin Odegaard", "", "Left-footed strike from the right side."),
+                new("LIV", 42, "Goal", "Mohamed Salah", "Trent Alexander-Arnold", "", "Equaliser after a direct counter attack."),
+                new("ARS", 61, "Goal", "Gabriel Martinelli", "Declan Rice", "", "Fast finish after pressure in midfield."),
+                new("LIV", 83, "Goal", "Darwin Nunez", "", "", "Late header from close range.")
+            }
+        ),
+
+        new(
+            "MUN",
+            "TOT",
+            1,
+            3,
+            new List<DemoEventSeed>
+            {
+                new("MUN", 12, "Goal", "Bruno Fernandes", "", "", "Penalty converted into the bottom corner."),
+                new("TOT", 31, "Goal", "Son Heung-min", "James Maddison", "", "Smart finish after a through ball."),
+                new("TOT", 58, "Goal", "James Maddison", "", "", "Powerful shot from outside the box."),
+                new("TOT", 74, "Goal", "Richarlison", "Pedro Porro", "", "Header from a wide cross.")
+            }
+        ),
+
+        new(
+            "NEW",
+            "AVL",
+            2,
+            0,
+            new List<DemoEventSeed>
+            {
+                new("NEW", 26, "Goal", "Alexander Isak", "Anthony Gordon", "", "Composed finish inside the penalty area."),
+                new("AVL", 53, "YellowCard", "John McGinn", "", "", "Stopped a promising attack."),
+                new("NEW", 69, "Goal", "Anthony Gordon", "", "", "Finished after a defensive mistake.")
+            }
+        ),
+
+        new(
+            "WHU",
+            "CRY",
+            1,
+            1,
+            new List<DemoEventSeed>
+            {
+                new("WHU", 33, "Goal", "Jarrod Bowen", "Lucas Paqueta", "", "Curled finish from the edge of the box."),
+                new("CRY", 76, "Goal", "Eberechi Eze", "", "", "Equaliser with a precise low shot.")
+            }
+        ),
+
+        new(
+            "FUL",
+            "BRE",
+            0,
+            1,
+            new List<DemoEventSeed>
+            {
+                new("BRE", 55, "Goal", "Bryan Mbeumo", "", "", "Decisive finish after a quick transition."),
+                new("FUL", 72, "YellowCard", "Joao Palhinha", "", "", "Booked for a tactical foul.")
+            }
+        ),
+
+        new(
+            "BHA",
+            "BOU",
+            2,
+            1,
+            new List<DemoEventSeed>
+            {
+                new("BHA", 14, "Goal", "Kaoru Mitoma", "Pascal Gross", "", "Sharp finish after a diagonal run."),
+                new("BOU", 49, "Goal", "Dominic Solanke", "", "", "Equaliser after a loose ball in the box."),
+                new("BHA", 82, "Goal", "Evan Ferguson", "", "", "Late winner with a strong header.")
+            }
+        ),
+
+        new(
+            "EVE",
+            "NFO",
+            1,
+            0,
+            new List<DemoEventSeed>
+            {
+                new("EVE", 63, "Goal", "Dominic Calvert-Lewin", "Dwight McNeil", "", "Header from a left-side delivery."),
+                new("NFO", 79, "YellowCard", "Morgan Gibbs-White", "", "", "Booked after protesting a decision.")
+            }
+        ),
+
+        new(
+            "LEE",
+            "SUN",
+            2,
+            0,
+            new List<DemoEventSeed>
+            {
+                new("LEE", 21, "Goal", "Wilfried Gnonto", "", "", "Early goal after pressing high."),
+                new("SUN", 50, "YellowCard", "Dan Neil", "", "", "Late tackle in midfield."),
+                new("LEE", 88, "Goal", "Crysencio Summerville", "", "", "Counter attack goal in the final minutes.")
+            }
+        ),
+
+        new(
+            "WOL",
+            "BUR",
+            1,
+            1,
+            new List<DemoEventSeed>
+            {
+                new("WOL", 45, "Goal", "Matheus Cunha", "", "", "Goal just before half-time."),
+                new("BUR", 73, "Goal", "Josh Brownhill", "", "", "Equaliser after a second-ball situation."),
+                new("WOL", 90, "VAR", "Match Official", "", "", "VAR reviewed a possible penalty decision.")
+            }
+        )
+    };
     }
 
     private sealed record FixtureSeed(
@@ -472,4 +744,20 @@ public class DevelopmentSeedController : ControllerBase
         string StadiumName,
         bool IsTopMatch,
         string Status);
+
+    private sealed record DemoMatchDataSeed(
+        string HomeShortName,
+        string AwayShortName,
+        int HomeScore,
+        int AwayScore,
+        List<DemoEventSeed> Events);
+
+    private sealed record DemoEventSeed(
+        string TeamShortName,
+        int Minute,
+        string EventType,
+        string PlayerName,
+        string AssistPlayerName,
+        string RelatedPlayerName,
+        string Description);
 }
