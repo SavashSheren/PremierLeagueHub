@@ -78,4 +78,21 @@ public class FixturesController : ControllerBase
 
         return Ok("Fixture deleted successfully.");
     }
+    [HttpPut("result")]
+    public async Task<IActionResult> UpdateFixtureResult(UpdateFixtureResultDto updateFixtureResultDto)
+    {
+        if (updateFixtureResultDto.HomeScore < 0 || updateFixtureResultDto.AwayScore < 0)
+        {
+            return BadRequest("Scores cannot be negative.");
+        }
+
+        var result = await _fixtureService.UpdateFixtureResultAsync(updateFixtureResultDto);
+
+        if (!result)
+        {
+            return NotFound("Fixture not found.");
+        }
+
+        return Ok("Fixture result updated successfully.");
+    }
 }
