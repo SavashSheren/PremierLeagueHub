@@ -12,6 +12,7 @@ public class PremierLeagueHubContext : DbContext
 
     public DbSet<Team> Teams { get; set; }
     public DbSet<Fixture> Fixtures { get; set; }
+    public DbSet<MatchEvent> MatchEvents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,6 +28,18 @@ public class PremierLeagueHubContext : DbContext
             .HasOne(x => x.AwayTeam)
             .WithMany()
             .HasForeignKey(x => x.AwayTeamId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<MatchEvent>()
+            .HasOne(x => x.Fixture)
+            .WithMany()
+            .HasForeignKey(x => x.FixtureId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MatchEvent>()
+            .HasOne(x => x.Team)
+            .WithMany()
+            .HasForeignKey(x => x.TeamId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

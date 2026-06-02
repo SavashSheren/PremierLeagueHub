@@ -17,10 +17,15 @@ builder.Services.AddDbContext<PremierLeagueHubContext>(options =>
 
 builder.Services.AddAutoMapper(typeof(GeneralMapping).Assembly);
 builder.Services.AddValidatorsFromAssemblyContaining<CreateTeamDtoValidator>();
+
 builder.Services.AddScoped<ITeamDal, EfTeamDal>();
 builder.Services.AddScoped<ITeamService, TeamManager>();
+
 builder.Services.AddScoped<IFixtureDal, EfFixtureDal>();
 builder.Services.AddScoped<IFixtureService, FixtureManager>();
+
+builder.Services.AddScoped<IMatchEventDal, EfMatchEventDal>();
+builder.Services.AddScoped<IMatchEventService, MatchEventManager>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

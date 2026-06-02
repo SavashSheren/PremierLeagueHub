@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PremierLeagueHub.DataAccessLayer.Concrete;
 
@@ -11,9 +12,11 @@ using PremierLeagueHub.DataAccessLayer.Concrete;
 namespace PremierLeagueHub.DataAccessLayer.Migrations
 {
     [DbContext(typeof(PremierLeagueHubContext))]
-    partial class PremierLeagueHubContextModelSnapshot : ModelSnapshot
+    [Migration("20260602015104_AddMatchEventModule")]
+    partial class AddMatchEventModule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
