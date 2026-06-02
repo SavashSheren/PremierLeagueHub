@@ -1,68 +1,107 @@
-﻿@model GetFixtureByIdDto
+﻿@model PublicFixtureDetailViewModel
 
 @{
-    ViewData["Title"] = $"{Model.HomeTeamName} vs {Model.AwayTeamName}";
+    var fixture = Model.Fixture;
+
+    ViewData["Title"] = $"{fixture.HomeTeamName} vs {fixture.AwayTeamName}";
     Layout = "~/Views/Shared/_PublicLayout.cshtml";
+}
+
+@functions {
+    private string GetEventIcon(string eventType)
+    {
+        return eventType switch
+        {
+            "Goal" => "⚽",
+            "Penalty" => "🎯",
+            "YellowCard" => "🟨",
+            "RedCard" => "🟥",
+            "Substitution" => "🔁",
+            "VAR" => "📺",
+            _ => "•"
+        };
+    }
+
+    private string GetEventClass(string eventType)
+    {
+        return eventType switch
+        {
+            "Goal" => "goal-event",
+            "Penalty" => "penalty-event",
+            "YellowCard" => "yellow-event",
+            "RedCard" => "red-event",
+            "Substitution" => "sub-event",
+            "VAR" => "var-event",
+            _ => "default-event"
+        };
+    }
 }
 
 <section class="fixture-detail-hero">
     <div class="container">
         <div class="fixture-detail-badges">
             <span>Premier League</span>
-            <span>Week @Model.WeekNumber</span>
+            <span>Week @fixture.WeekNumber</span>
 
-            @if (Model.IsTopMatch)
+            @if (fixture.IsTopMatch)
             {
                 <span class="gold">Top Match</span>
             }
             else
             {
-                <span>@Model.Status</span>
+                <span>@fixture.Status</span>
             }
         </div>
 
         <div class="fixture-detail-scoreboard">
             <div class="fixture-detail-team home">
-                <img src="@Model.HomeTeamLogoUrl" alt="@Model.HomeTeamName logo" />
-                <h2>@Model.HomeTeamName</h2>
-                <p>@Model.HomeTeamShortName</p>
+                <img src="@fixture.HomeTeamLogoUrl" alt="@fixture.HomeTeamName logo" />
+                <h2>@fixture.HomeTeamName</h2>
+                <p>@fixture.HomeTeamShortName</p>
             </div>
 
             <div class="fixture-detail-center">
                 <div class="fixture-detail-date">
-                    @Model.MatchDate.ToString("dd MMM yyyy")
+                    @fixture.MatchDate.ToString("dd MMM yyyy")
                 </div>
 
                 <div class="fixture-detail-vs">
-                    VS
+                    @if (fixture.HasResult)
+                    {
+                        <span class="fixture-detail-score">@fixture.HomeScore - @fixture.AwayScore</span>
+                    }
+                    else
+                    {
+                        <span>VS</span>
+                    }
                 </div>
 
                 <div class="fixture-detail-time">
-                    @Model.MatchDate.ToString("HH:mm")
+                    @fixture.MatchDate.ToString("HH:mm")
                 </div>
             </div>
 
             <div class="fixture-detail-team away">
-                <img src="@Model.AwayTeamLogoUrl" alt="@Model.AwayTeamName logo" />
-                <h2>@Model.AwayTeamName</h2>
-                <p>@Model.AwayTeamShortName</p>
+                <img src="@fixture.AwayTeamLogoUrl" alt="@fixture.AwayTeamName logo" />
+                <h2>@fixture.AwayTeamName</h2>
+                <p>@fixture.AwayTeamShortName</p>
             </div>
         </div>
 
         <div class="fixture-detail-meta-strip">
             <div>
                 <span>Season</span>
-                <strong>@Model.Season</strong>
+                <strong>@fixture.Season</strong>
             </div>
 
             <div>
                 <span>Stadium</span>
-                <strong>@Model.StadiumName</strong>
+                <strong>@fixture.StadiumName</strong>
             </div>
 
             <div>
                 <span>Status</span>
-                <strong>@Model.Status</strong>
+                <strong>@fixture.Status</strong>
             </div>
         </div>
     </div>
@@ -91,38 +130,66 @@
         <div class="col-xl-8">
             <div class="fixture-preview-card">
                 <div class="fixture-card-title">
-                    Match Preview
+                    Match Timeline
                 </div>
 
-                <h3>@Model.HomeTeamName vs @Model.AwayTeamName</h3>
-
-                <p>
-                    This Premier League fixture brings together two clubs with different tactical profiles,
-                    squad identities and competitive ambitions. The match detail page is now connected to
-                    the Fixture API and ready for future live score, events and statistics modules.
-                </p>
-
-                <div class="fixture-preview-grid">
-                    <div>
-                        <span>Home Team</span>
-                        <strong>@Model.HomeTeamName</strong>
+                @if (!Model.HasEvents)
+                {
+                    <div class="timeline-empty-state">
+                        <h3>No match events yet.</h3>
+                        <p>
+                            Add goals, cards, substitutions or VAR events from Swagger for now.
+                            Admin match event management will come next.
+                        </p>
                     </div>
+                }
+                else
+                {
+                    <div class="match-timeline">
+                        @foreach (var matchEvent in Model.MatchEvents)
+                        {
+                            var isHomeEvent = matchEvent.TeamId == fixture.HomeTeamId;
 
-                    <div>
-                        <span>Away Team</span>
-                        <strong>@Model.AwayTeamName</strong>
-                    </div>
+                            <div class="match-event-row @(isHomeEvent ? "home-event" : "away-event")">
+                                <div class="event-minute">
+                                    @matchEvent.Minute'
+                                </div>
 
-                    <div>
-                        <span>Kick-off</span>
-                        <strong>@Model.MatchDate.ToString("dd MMM yyyy HH:mm")</strong>
-                    </div>
+                                <div class="event-card @GetEventClass(matchEvent.EventType)">
+                                    <div class="event-icon">
+                                        @GetEventIcon(matchEvent.EventType)
+                                    </div>
 
-                    <div>
-                        <span>Venue</span>
-                        <strong>@Model.StadiumName</strong>
+                                    <div class="event-content">
+                                        <div class="event-main-line">
+                                            <strong>@matchEvent.EventType</strong>
+                                            <span>@matchEvent.TeamShortName</span>
+                                        </div>
+
+                                        <h4>@matchEvent.PlayerName</h4>
+
+                                        @if (!string.IsNullOrWhiteSpace(matchEvent.AssistPlayerName))
+                                        {
+                                            <p>Assist: @matchEvent.AssistPlayerName</p>
+                                        }
+
+                                        @if (!string.IsNullOrWhiteSpace(matchEvent.RelatedPlayerName))
+                                        {
+                                            <p>Related player: @matchEvent.RelatedPlayerName</p>
+                                        }
+
+                                        @if (!string.IsNullOrWhiteSpace(matchEvent.Description))
+                                        {
+                                            <p>@matchEvent.Description</p>
+                                        }
+                                    </div>
+
+                                    <img src="@matchEvent.TeamLogoUrl" alt="@matchEvent.TeamName logo" />
+                                </div>
+                            </div>
+                        }
                     </div>
-                </div>
+                }
             </div>
         </div>
 
@@ -133,20 +200,37 @@
                 </div>
 
                 <div class="fixture-status-big">
-                    @Model.Status
+                    @fixture.Status
                 </div>
 
                 <p class="mb-4">
-                    Result, score timeline, cards, substitutions and match statistics will be added in the next module.
+                    This fixture detail page is now connected to match events and ready for admin timeline management.
                 </p>
 
-                <div class="d-grid gap-2">
-                    <a href="/Home/TeamDetail/@Model.HomeTeamId" class="btn btn-primary rounded-pill">
-                        View @Model.HomeTeamShortName
+                <div class="fixture-preview-grid single-column">
+                    <div>
+                        <span>Home Team</span>
+                        <strong>@fixture.HomeTeamName</strong>
+                    </div>
+
+                    <div>
+                        <span>Away Team</span>
+                        <strong>@fixture.AwayTeamName</strong>
+                    </div>
+
+                    <div>
+                        <span>Events</span>
+                        <strong>@Model.MatchEvents.Count event(s)</strong>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <a href="/Home/TeamDetail/@fixture.HomeTeamId" class="btn btn-primary rounded-pill">
+                        View @fixture.HomeTeamShortName
                     </a>
 
-                    <a href="/Home/TeamDetail/@Model.AwayTeamId" class="btn btn-light rounded-pill">
-                        View @Model.AwayTeamShortName
+                    <a href="/Home/TeamDetail/@fixture.AwayTeamId" class="btn btn-light rounded-pill">
+                        View @fixture.AwayTeamShortName
                     </a>
                 </div>
             </div>

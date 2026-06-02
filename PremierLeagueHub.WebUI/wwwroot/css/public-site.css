@@ -1544,4 +1544,180 @@ a {
             grid-template-columns: 1fr;
         }
     }
+    .match-timeline {
+        position: relative;
+        padding: 10px 0;
+    }
+
+        .match-timeline::before {
+            content: "";
+            position: absolute;
+            left: 72px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--pl-border);
+        }
+
+    .match-event-row {
+        display: grid;
+        grid-template-columns: 70px 1fr;
+        gap: 18px;
+        margin-bottom: 18px;
+        position: relative;
+    }
+
+    .event-minute {
+        color: var(--pl-green);
+        font-size: 20px;
+        font-weight: 900;
+        text-align: right;
+        padding-top: 18px;
+    }
+
+    .event-card {
+        background: var(--pl-bg-2);
+        border: 1px solid var(--pl-border);
+        border-radius: var(--pl-radius-md);
+        padding: 18px;
+        display: grid;
+        grid-template-columns: 42px 1fr 42px;
+        gap: 14px;
+        align-items: center;
+        transition: var(--pl-transition);
+    }
+
+        .event-card:hover {
+            background: var(--pl-card-2);
+            border-color: rgba(41,121,255,.34);
+            transform: translateX(4px);
+        }
+
+        .event-card img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: var(--pl-elevated);
+            border: 1px solid var(--pl-border);
+            padding: 5px;
+        }
+
+    .event-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: var(--pl-radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--pl-card);
+        border: 1px solid var(--pl-border);
+        font-size: 20px;
+    }
+
+    .event-main-line {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+
+        .event-main-line strong {
+            color: var(--pl-text);
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .event-main-line span {
+            color: var(--pl-soft);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+    .event-content h4 {
+        color: var(--pl-text);
+        font-size: 18px;
+        font-weight: 900;
+        margin: 0 0 4px;
+    }
+
+    .event-content p {
+        color: var(--pl-muted);
+        font-size: 13px;
+        margin: 3px 0 0;
+        line-height: 1.5;
+    }
+
+    .goal-event {
+        border-color: rgba(0,230,118,.26);
+    }
+
+    .penalty-event {
+        border-color: rgba(255,214,0,.28);
+    }
+
+    .yellow-event {
+        border-color: rgba(255,214,0,.28);
+    }
+
+    .red-event {
+        border-color: rgba(255,23,68,.32);
+    }
+
+    .sub-event {
+        border-color: rgba(41,121,255,.30);
+    }
+
+    .var-event {
+        border-color: rgba(123,150,196,.28);
+    }
+
+    .timeline-empty-state {
+        background: var(--pl-bg-2);
+        border: 1px dashed var(--pl-border);
+        border-radius: var(--pl-radius-md);
+        padding: 32px;
+        text-align: center;
+    }
+
+        .timeline-empty-state h3 {
+            color: var(--pl-text);
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .timeline-empty-state p {
+            color: var(--pl-muted);
+            margin: 0;
+        }
+
+    .fixture-preview-grid.single-column {
+        grid-template-columns: 1fr;
+    }
+
+    @media(max-width: 768px) {
+        .match-timeline::before {
+            left: 54px;
+        }
+
+        .match-event-row {
+            grid-template-columns: 52px 1fr;
+            gap: 12px;
+        }
+
+        .event-minute {
+            font-size: 15px;
+        }
+
+        .event-card {
+            grid-template-columns: 36px 1fr;
+        }
+
+            .event-card img {
+                display: none;
+            }
+    }
 }
