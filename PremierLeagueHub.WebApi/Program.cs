@@ -7,6 +7,7 @@ using PremierLeagueHub.DataAccessLayer.Concrete;
 using PremierLeagueHub.DataAccessLayer.EntityFramework;
 using FluentValidation;
 using PremierLeagueHub.BusinessLayer.ValidationRules.TeamValidators;
+using PremierLeagueHub.WebApi.ExternalFootball;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,20 @@ builder.Services.AddScoped<IMatchEventService, MatchEventManager>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var externalFootballBaseUrl = builder.Configuration["ExternalFootballApi:BaseUrl"]
+                              ?? "https://v3.football.api-sports.io/";
+
+builder.Services.AddHttpClient("ExternalFootballApi", client =>
+{
+    client.BaseAddress = new Uri(externalFootballBaseUrl);
+});
+
+builder.Services.AddScoped<IExternalFootballApiService, ApiFootballExternalFootballApiService>();
 
 var app = builder.Build();
 
