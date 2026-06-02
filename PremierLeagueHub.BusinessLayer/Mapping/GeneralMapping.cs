@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PremierLeagueHub.DtoLayer.FixtureDtos;
 using PremierLeagueHub.DtoLayer.TeamDtos;
 using PremierLeagueHub.EntityLayer.Entities;
 
@@ -12,5 +13,8 @@ public class GeneralMapping : Profile
         CreateMap<Team, GetTeamByIdDto>().ReverseMap();
         CreateMap<Team, CreateTeamDto>().ReverseMap();
         CreateMap<Team, UpdateTeamDto>().ReverseMap();
+
+        CreateMap<Fixture, CreateFixtureDto>().ReverseMap();
+        CreateMap<Fixture, UpdateFixtureDto>().ReverseMap();
     }
 }

@@ -19,6 +19,8 @@ builder.Services.AddAutoMapper(typeof(GeneralMapping).Assembly);
 builder.Services.AddValidatorsFromAssemblyContaining<CreateTeamDtoValidator>();
 builder.Services.AddScoped<ITeamDal, EfTeamDal>();
 builder.Services.AddScoped<ITeamService, TeamManager>();
+builder.Services.AddScoped<IFixtureDal, EfFixtureDal>();
+builder.Services.AddScoped<IFixtureService, FixtureManager>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

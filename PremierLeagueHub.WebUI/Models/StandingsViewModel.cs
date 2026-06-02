@@ -14,3 +14,4 @@
 
         public int TotalTeams => Rows.Count;
     }
+}
