@@ -8,7 +8,7 @@ This project is not just a football listing website. It is designed as a complet
 
 ## Project Preview
 
-![Public Home Featured Match](screenshots/public-home-featured-match.png)
+![Public Home Featured Match](PremierLeagueHub.WebUI/wwwroot/screenshots/public-home-featured-match.png)
 
 ---
 
@@ -81,25 +81,25 @@ The public side presents a premium football platform experience with featured ma
 
 The home page includes a featured match area, latest results and Premier League team discovery.
 
-![Public Home Featured Match](screenshots/public-home-featured-match.png)
+![Public Home Featured Match](PremierLeagueHub.WebUI/wwwroot/screenshots/public-home-featured-match.png)
 
 ### Public Fixtures and Results
 
 Fixtures are displayed with team logos, match status, match date, stadium information and final score when available.
 
-![Public Fixtures Results](screenshots/public-fixtures-results.png)
+![Public Fixtures Results](PremierLeagueHub.WebUI/wwwroot/screenshots/public-fixtures-results.png)
 
 ### Fixture Detail with Match Timeline
 
 Each fixture has a detail page that shows the match scoreboard, teams, status, stadium and timeline events such as goals, yellow cards, red cards, substitutions, penalties and VAR events.
 
-![Public Fixture Detail Timeline](screenshots/public-fixture-detail-timeline.png)
+![Public Fixture Detail Timeline](PremierLeagueHub.WebUI/wwwroot/screenshots/public-fixture-detail-timeline.png)
 
 ### Dynamic League Standings
 
 The standings table is calculated dynamically from completed fixture results. It automatically calculates played matches, wins, draws, losses, goals for, goals against, goal difference, points and recent form.
 
-![Public Dynamic Standings](screenshots/public-dynamic-standings.png)
+![Public Dynamic Standings](PremierLeagueHub.WebUI/wwwroot/screenshots/public-dynamic-standings.png)
 
 ---
 
@@ -111,31 +111,31 @@ The admin panel is designed for managing the football platform from one central 
 
 The dashboard provides a quick overview of total teams, fixtures, finished matches, match events, recent fixtures, recent events and project snapshot details.
 
-![Admin Dashboard Analytics](screenshots/admin-dashboard-analytics.png)
+![Admin Dashboard Analytics](PremierLeagueHub.WebUI/wwwroot/screenshots/admin-dashboard-analytics.png)
 
 ### Team Management
 
 Admins can manage Premier League clubs, team logos, city, stadium, manager, colors and active/passive status.
 
-![Admin Team Management](screenshots/admin-team-management.png)
+![Admin Team Management](PremierLeagueHub.WebUI/wwwroot/screenshots/admin-team-management.png)
 
 ### Fixture Management
 
 Admins can view fixtures, check status, see scores and navigate to result or event management screens.
 
-![Admin Fixture Management](screenshots/admin-fixture-management.png)
+![Admin Fixture Management](PremierLeagueHub.WebUI/wwwroot/screenshots/admin-fixture-management.png)
 
 ### Update Match Result
 
 Admins can update match scores and match status from the admin panel. Once updated, the score is reflected on public fixtures, fixture detail and dynamic standings.
 
-![Admin Update Match Result](screenshots/admin-update-match-result.png)
+![Admin Update Match Result](PremierLeagueHub.WebUI/wwwroot/screenshots/admin-update-match-result.png)
 
 ### Match Event Management
 
 Admins can add and delete match events such as goals, cards, substitutions, penalties and VAR events. These events are shown directly on the public fixture detail timeline.
 
-![Admin Match Event Management](screenshots/admin-match-event-management.png)
+![Admin Match Event Management](PremierLeagueHub.WebUI/wwwroot/screenshots/admin-match-event-management.png)
 
 ---
 
@@ -143,7 +143,7 @@ Admins can add and delete match events such as goals, cards, substitutions, pena
 
 The project exposes backend functionality through ASP.NET Core Web API endpoints. Swagger is used for endpoint testing and documentation.
 
-![Swagger API Overview](screenshots/swagger-api-overview.png)
+![Swagger API Overview](PremierLeagueHub.WebUI/wwwroot/screenshots/swagger-api-overview.png)
 
 Main API modules include:
 
@@ -163,7 +163,7 @@ PremierLeagueHub includes an external football API integration foundation. The s
 
 API keys are intentionally not committed to the repository. When no key is configured, the system returns a safe configuration response instead of crashing.
 
-![External Football API Status](screenshots/external-football-api-status.png)
+![External Football API Status](PremierLeagueHub.WebUI/wwwroot/screenshots/external-football-api-status.png)
 
 This design allows two usage modes:
 
@@ -295,7 +295,7 @@ Main strengths:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/PremierLeagueHub.git
+git clone https://github.com/SavashSheren/PremierLeagueHub.git
 cd PremierLeagueHub
 ```
 
