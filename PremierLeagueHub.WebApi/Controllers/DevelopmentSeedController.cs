@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PremierLeagueHub.BusinessLayer.Abstract;
+using PremierLeagueHub.DtoLayer.FixtureDtos;
 using PremierLeagueHub.DtoLayer.TeamDtos;
 
 namespace PremierLeagueHub.WebApi.Controllers;
@@ -9,11 +10,16 @@ namespace PremierLeagueHub.WebApi.Controllers;
 public class DevelopmentSeedController : ControllerBase
 {
     private readonly ITeamService _teamService;
+    private readonly IFixtureService _fixtureService;
     private readonly IWebHostEnvironment _environment;
 
-    public DevelopmentSeedController(ITeamService teamService, IWebHostEnvironment environment)
+    public DevelopmentSeedController(
+        ITeamService teamService,
+        IFixtureService fixtureService,
+        IWebHostEnvironment environment)
     {
         _teamService = teamService;
+        _fixtureService = fixtureService;
         _environment = environment;
     }
 
@@ -26,8 +32,116 @@ public class DevelopmentSeedController : ControllerBase
         }
 
         var existingTeams = await _teamService.GetAllTeamsAsync();
+        var teams = GetPremierLeagueTeams();
 
-        var teams = new List<CreateTeamDto>
+        var createdCount = 0;
+        var skippedCount = 0;
+
+        foreach (var team in teams)
+        {
+            var alreadyExists = existingTeams.Any(x =>
+                x.TeamName.Equals(team.TeamName, StringComparison.OrdinalIgnoreCase));
+
+            if (alreadyExists)
+            {
+                skippedCount++;
+                continue;
+            }
+
+            await _teamService.CreateTeamAsync(team);
+            createdCount++;
+        }
+
+        return Ok(new
+        {
+            Message = "Premier League seed operation completed.",
+            CreatedCount = createdCount,
+            SkippedCount = skippedCount,
+            TotalSeedTeams = teams.Count
+        });
+    }
+
+    [HttpPost("week-34-fixtures")]
+    public async Task<IActionResult> SeedWeek34Fixtures()
+    {
+        if (!_environment.IsDevelopment())
+        {
+            return BadRequest("Seed endpoint is only available in Development environment.");
+        }
+
+        var teams = await _teamService.GetAllTeamsAsync();
+        var existingFixtures = await _fixtureService.GetAllFixturesAsync();
+        var fixtureSeeds = GetWeek34FixtureSeeds();
+
+        var missingTeams = fixtureSeeds
+            .SelectMany(x => new[] { x.HomeShortName, x.AwayShortName })
+            .Distinct()
+            .Where(shortName => !teams.Any(team =>
+                team.ShortName.Equals(shortName, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+
+        if (missingTeams.Any())
+        {
+            return BadRequest(new
+            {
+                Message = "Some teams are missing. Run premier-league-teams seed first.",
+                MissingTeams = missingTeams
+            });
+        }
+
+        int GetTeamId(string shortName)
+        {
+            return teams.First(x =>
+                x.ShortName.Equals(shortName, StringComparison.OrdinalIgnoreCase)).TeamId;
+        }
+
+        var createdCount = 0;
+        var skippedCount = 0;
+
+        foreach (var seed in fixtureSeeds)
+        {
+            var homeTeamId = GetTeamId(seed.HomeShortName);
+            var awayTeamId = GetTeamId(seed.AwayShortName);
+
+            var alreadyExists = existingFixtures.Any(x =>
+                x.HomeTeamId == homeTeamId &&
+                x.AwayTeamId == awayTeamId &&
+                x.MatchDate == seed.MatchDate);
+
+            if (alreadyExists)
+            {
+                skippedCount++;
+                continue;
+            }
+
+            var fixture = new CreateFixtureDto
+            {
+                HomeTeamId = homeTeamId,
+                AwayTeamId = awayTeamId,
+                MatchDate = seed.MatchDate,
+                WeekNumber = seed.WeekNumber,
+                Season = seed.Season,
+                StadiumName = seed.StadiumName,
+                IsTopMatch = seed.IsTopMatch,
+                Status = seed.Status
+            };
+
+            await _fixtureService.CreateFixtureAsync(fixture);
+            createdCount++;
+        }
+
+        return Ok(new
+        {
+            Message = "Week 34 fixture seed operation completed.",
+            CreatedCount = createdCount,
+            SkippedCount = skippedCount,
+            TotalSeedFixtures = fixtureSeeds.Count
+        });
+    }
+
+    private static List<CreateTeamDto> GetPremierLeagueTeams()
+    {
+        return new List<CreateTeamDto>
         {
             new()
             {
@@ -330,31 +444,32 @@ public class DevelopmentSeedController : ControllerBase
                 IsActive = true
             }
         };
-
-        var createdCount = 0;
-        var skippedCount = 0;
-
-        foreach (var team in teams)
-        {
-            var alreadyExists = existingTeams.Any(x =>
-                x.TeamName.Equals(team.TeamName, StringComparison.OrdinalIgnoreCase));
-
-            if (alreadyExists)
-            {
-                skippedCount++;
-                continue;
-            }
-
-            await _teamService.CreateTeamAsync(team);
-            createdCount++;
-        }
-
-        return Ok(new
-        {
-            Message = "Premier League seed operation completed.",
-            CreatedCount = createdCount,
-            SkippedCount = skippedCount,
-            TotalSeedTeams = teams.Count
-        });
     }
+
+    private static List<FixtureSeed> GetWeek34FixtureSeeds()
+    {
+        return new List<FixtureSeed>
+        {
+            new("MCI", "CHE", new DateTime(2026, 4, 18, 20, 0, 0), 34, "2025/2026", "Etihad Stadium", true, "Scheduled"),
+            new("ARS", "LIV", new DateTime(2026, 4, 19, 17, 30, 0), 34, "2025/2026", "Emirates Stadium", true, "Scheduled"),
+            new("MUN", "TOT", new DateTime(2026, 4, 19, 20, 0, 0), 34, "2025/2026", "Old Trafford", true, "Scheduled"),
+            new("NEW", "AVL", new DateTime(2026, 4, 20, 14, 30, 0), 34, "2025/2026", "St James' Park", false, "Scheduled"),
+            new("WHU", "CRY", new DateTime(2026, 4, 20, 16, 0, 0), 34, "2025/2026", "London Stadium", false, "Scheduled"),
+            new("FUL", "BRE", new DateTime(2026, 4, 20, 16, 0, 0), 34, "2025/2026", "Craven Cottage", false, "Scheduled"),
+            new("BHA", "BOU", new DateTime(2026, 4, 20, 16, 0, 0), 34, "2025/2026", "American Express Stadium", false, "Scheduled"),
+            new("EVE", "NFO", new DateTime(2026, 4, 20, 18, 30, 0), 34, "2025/2026", "Hill Dickinson Stadium", false, "Scheduled"),
+            new("LEE", "SUN", new DateTime(2026, 4, 21, 20, 0, 0), 34, "2025/2026", "Elland Road", false, "Scheduled"),
+            new("WOL", "BUR", new DateTime(2026, 4, 21, 22, 0, 0), 34, "2025/2026", "Molineux Stadium", false, "Scheduled")
+        };
+    }
+
+    private sealed record FixtureSeed(
+        string HomeShortName,
+        string AwayShortName,
+        DateTime MatchDate,
+        int WeekNumber,
+        string Season,
+        string StadiumName,
+        bool IsTopMatch,
+        string Status);
 }
