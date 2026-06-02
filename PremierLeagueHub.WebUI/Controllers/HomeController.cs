@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using PremierLeagueHub.DtoLayer.FixtureDtos;
 using PremierLeagueHub.DtoLayer.TeamDtos;
 using PremierLeagueHub.WebUI.Models;
 using System.Net.Http.Json;
@@ -14,7 +15,7 @@ public class HomeController : Controller
         _httpClientFactory = httpClientFactory;
     }
 
-    
+
     public async Task<IActionResult> Index(string? searchTerm, string statusFilter = "all", string cityFilter = "all")
     {
         var client = _httpClientFactory.CreateClient("PremierLeagueApi");
@@ -23,6 +24,18 @@ public class HomeController : Controller
         {
             var teams = await client.GetFromJsonAsync<List<ResultTeamDto>>("Teams")
                         ?? new List<ResultTeamDto>();
+
+            var fixtures = new List<ResultFixtureDto>();
+
+            try
+            {
+                fixtures = await client.GetFromJsonAsync<List<ResultFixtureDto>>("Fixtures")
+                           ?? new List<ResultFixtureDto>();
+            }
+            catch
+            {
+                ViewBag.FixtureApiError = "Fixture data could not be loaded.";
+            }
 
             var query = teams.AsEnumerable();
 
@@ -69,7 +82,10 @@ public class HomeController : Controller
                     .Distinct()
                     .OrderBy(x => x)
                     .ToList(),
-                Teams = filteredTeams
+                Teams = filteredTeams,
+                Fixtures = fixtures
+                    .OrderBy(x => x.MatchDate)
+                    .ToList()
             };
 
             return View(model);

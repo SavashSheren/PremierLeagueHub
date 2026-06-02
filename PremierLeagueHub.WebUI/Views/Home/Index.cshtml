@@ -161,4 +161,115 @@
             </div>
         }
     </section>
+    @if (ViewBag.FixtureApiError != null)
+    {
+        <div class="alert alert-danger rounded-4">
+            @ViewBag.FixtureApiError
+        </div>
+    }
+
+    @if (Model.FeaturedFixture != null)
+    {
+        var featured = Model.FeaturedFixture;
+
+        <section class="home-featured-grid">
+            <div class="home-featured-match-card">
+                <div class="featured-card-header">
+                    <div>
+                        <span>Featured Match</span>
+                        <h2>@featured.HomeTeamName vs @featured.AwayTeamName</h2>
+                    </div>
+
+                    @if (featured.IsTopMatch)
+                    {
+                        <div class="featured-top-badge">Top Match</div>
+                    }
+                </div>
+
+                <div class="featured-scoreboard">
+                    <div class="featured-team">
+                        <img src="@featured.HomeTeamLogoUrl" alt="@featured.HomeTeamName logo" />
+                        <strong>@featured.HomeTeamShortName</strong>
+                        <span>@featured.HomeTeamName</span>
+                    </div>
+
+                    <div class="featured-center">
+                        @if (featured.HasResult)
+                        {
+                            <div class="featured-score">
+                                @featured.HomeScore - @featured.AwayScore
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="featured-vs">VS</div>
+                        }
+
+                        <span>@featured.MatchDate.ToString("dd MMM yyyy HH:mm")</span>
+                    </div>
+
+                    <div class="featured-team">
+                        <img src="@featured.AwayTeamLogoUrl" alt="@featured.AwayTeamName logo" />
+                        <strong>@featured.AwayTeamShortName</strong>
+                        <span>@featured.AwayTeamName</span>
+                    </div>
+                </div>
+
+                <div class="featured-footer">
+                    <div>
+                        <span>Stadium</span>
+                        <strong>@featured.StadiumName</strong>
+                    </div>
+
+                    <a href="/Fixtures/Detail/@featured.FixtureId" class="btn btn-primary rounded-pill px-4">
+                        Match Details
+                    </a>
+                </div>
+            </div>
+
+            <div class="home-result-card">
+                <div class="featured-card-header compact">
+                    <div>
+                        <span>Latest Results</span>
+                        <h2>@Model.FinishedMatchesCount Finished</h2>
+                    </div>
+
+                    <a href="/Fixtures/Index" class="home-mini-link">
+                        View All
+                    </a>
+                </div>
+
+                @if (!Model.LatestResults.Any())
+                {
+                    <div class="home-empty-mini">
+                        No finished matches yet.
+                    </div>
+                }
+                else
+                {
+                    <div class="home-result-list">
+                        @foreach (var result in Model.LatestResults)
+                        {
+                            <a href="/Fixtures/Detail/@result.FixtureId" class="home-result-item">
+                                <span>@result.HomeTeamShortName</span>
+
+                                <strong>
+                                    @if (result.HasResult)
+                                    {
+                                        @($"{result.HomeScore} - {result.AwayScore}")
+                                    }
+                                    else
+                                    {
+                                        @("VS")
+                                    }
+                                </strong>
+
+                                <span>@result.AwayTeamShortName</span>
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    }
 </div>
